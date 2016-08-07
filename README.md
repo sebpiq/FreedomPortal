@@ -9,8 +9,6 @@ Format USB key, create a single partition **ext4** called **PORTALKEY** (to matc
 
 Copy the source code of the web server on the usb stick as well, under `PortalApp/`.
 
-Create a `data/` directory for the menu game.
-
 Create a `site-packages/` directory for Python dependencies of the menu game
 
 Create a `log/` directory for supervisord logs.
@@ -147,3 +145,27 @@ Setup wireless
 -----------------
 
 in `/etc/config/wireless` change the encryption option to `none` and change the `ssid`. Max length of SSID is 32 characters!
+
+
+Checklist testing
+====================
+
+- try to put an https address in address bar
+- try to put IP address in address bar
+- try to put non-https url
+
+
+Checklist works
+==================
+
+```
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>192.168.0.1:Where the WiFi comes from</title>
+```
+
+Title 32 characters max (because of SSID).

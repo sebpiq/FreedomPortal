@@ -1,0 +1,1 @@
+scp -r . root@192.168.8.1:/mnt/PORTALKEY/PortalApp
