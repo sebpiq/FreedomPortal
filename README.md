@@ -45,9 +45,12 @@ For this step, the router needs Internet access.
 To make some space, we will remove some unused packages. Run the following :
 
 ```
-opkg remove gl-inet luci luci-base luci-* lua lighttd-* lighttd
+opkg remove gl-inet luci luci-base luci-* lua lighttpd-* lighttpd
+opkg remove kmod-video*
+opkg remove mjpg-streamer
 rm -rf /usr/lib/lua
 rm -rf /usr/lib/lighttpd/
+rm -rf /www/*
 ```
 
 Then to install the packages we need, first update repo with :
@@ -56,7 +59,7 @@ Then to install the packages we need, first update repo with :
 opkg update
 ```
 
-Then instal `python` : 
+Then install `python` : 
 
 ```
 opkg install python python-openssl 
@@ -96,19 +99,19 @@ Install python-supervisor with :
 pip install supervisor
 ```
 
-Copy the script for starting the menugame on startup : 
+Copy the script for starting the portal app on startup : 
 
 ```
-cp scripts/menugame-init.d /etc/init.d/menugame
+cp scripts/portalapp-init.d /etc/init.d/portalapp
 ```
 
 make it executable : 
 
 ```
-chmod +x /etc/init.d/menugame
+chmod +x /etc/init.d/portalapp
 ```
 
-Activate at next boot by running `/etc/init.d/menugame enable`.
+Activate at next boot by running `/etc/init.d/portalapp enable`.
 
 
 Redirect all requests to the Python app
@@ -143,4 +146,4 @@ config redirect
 Setup wireless
 -----------------
 
-in `/etc/config/wireless` change the encryption option to `none` and change the `ssid`. Max length of SSID is 31 characters!
+in `/etc/config/wireless` change the encryption option to `none` and change the `ssid`. Max length of SSID is 32 characters!
