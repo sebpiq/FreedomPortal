@@ -109,8 +109,17 @@ make it executable :
 chmod +x /etc/init.d/portalapp
 ```
 
-Activate at next boot by running `/etc/init.d/portalapp enable`.
+Activate at next boot by running 
 
+```
+/etc/init.d/portalapp enable
+```
+
+You can test that everything works by launching the server with 
+
+```
+/etc/init.d/portalapp start
+```
 
 Redirect all requests to the Python app
 -----------------------------------------
@@ -169,3 +178,9 @@ Checklist works
 ```
 
 Title 32 characters max (because of SSID).
+
+
+TODO
+=====
+
+- captive portal for iOS
