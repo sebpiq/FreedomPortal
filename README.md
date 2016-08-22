@@ -1,3 +1,20 @@
+FreedomPortal
+==============
+
+The **Freedom Portal** project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
+
+These instructions explain how to setup a wifi router and :
+- install a Python server (see bootstrap code [there](https://github.com/sebpiq/FreedomPortal/tree/master/FreedomPortal) better instructions and example on how to use this will come).
+- have the Python server start automatically on boot of the router, and restart if it crashed.
+- Setup DNS and firewall so that all requests will redirect to that Python server.
+
+In order to use these instructions, You need a Wi-Fi router:
+- able to support openWRT (https://openwrt.org/)
+- with a USB port so you can plug a USB key to extend the router's disk space
+- with *enough* flash memory (I am unsure of the exact amount of memory necessary, but probably **8Mb** or more)
+
+We have been using [GL-inet](http://www.gl-inet.com) routers, which have all of the above, and come with openWRT pre-installed.
+
 Config
 ========
 
