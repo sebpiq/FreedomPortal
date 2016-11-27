@@ -10,7 +10,7 @@ if (process.argv.length !== 3) {
 }
 config = require(process.argv[2])
 
-// Select the web environment in which the user will navigate the captive portal 
+// Select the web environment in which the user will navigate the captive portal
 if (config.webEnv === 'cna')
   cp.CaptivePortal.clientClasses = [cp.CnaAndroidClient, cp.CnaIosClient]
 else if (config.webEnv === 'full-browser')
@@ -26,9 +26,9 @@ httpApp.use('/', express.static(config.wwwDir))
 httpApp.get('*', function(req, res) { res.redirect('/') })
 
 // https redirection + starting everything
-https.createServer({ redirectUrl: 'http://a.co/' }, function() { 
-  httpApp.listen(80, function() { 
-    console.log('Captive portal server started in mode "' + config.webEnv + '" ') 
+https.createServer({ redirectUrl: 'http://a.co/', certsDir: path.join(__dirname, '../certs') }, function() {
+  httpApp.listen(80, function() {
+    console.log('Captive portal server started in mode "' + config.webEnv + '" ')
     console.log('Serving contents of folder "' + config.wwwDir + '"')
-  }) 
+  })
 })

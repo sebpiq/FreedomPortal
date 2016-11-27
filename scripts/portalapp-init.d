@@ -6,7 +6,9 @@ START=99
 STOP=1
  
 start() {        
-  supervisord -c /mnt/PORTALKEY/PortalApp/scripts/supervisord.conf
+  node /mnt/PORTALKEY/PortalApp/node_modules/freedom-portal/node_modules/forever/bin/forever start \
+    /mnt/PORTALKEY/PortalApp/node_modules/freedom-portal/bin/main.js \
+    /mnt/PORTALKEY/PortalApp/config.js
 }
  
 stop() {          

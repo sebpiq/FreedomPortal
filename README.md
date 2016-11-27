@@ -3,34 +3,91 @@ FreedomPortal
 
 The Freedom Portal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
 
-These instructions explain how to setup a wifi router and :
+These instructions explain how to :
 
-    install a Python server (see bootstrap code there better instructions and example on how to use this will come).
-    have the Python server start automatically on boot of the router, and restart if it crashed.
-    Setup DNS and firewall so that all requests will redirect to that Python server.
+    - create a FreedomPortal app
+    - deploy that app on a Wi-Fi router, so that it act as a captive portal for all clients connecting
 
 In order to use these instructions, You need a Wi-Fi router:
 
-    able to support openWRT (https://openwrt.org/)
-    with a USB port so you can plug a USB key to extend the router's disk space
-    with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
+    - able to support openWRT (https://openwrt.org/)
+    - with a USB port so you can plug a USB key to extend the router's disk space
+    - with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
 
 We have been using GL-inet routers, which have all of the above, and come with openWRT pre-installed.
 
 
-Config
-========
+Creating a FreedomPortal app
+==============================
+
+App structure
+---------------
+
+In its simplest form, i.e. if you only want to serve static html and assets, a FreedomPortal app is a node.js app with the following structure :
+
+```
+my-app/
+    config.js
+    package.json
+    www/
+        assets/
+            css/
+                styles.css
+            js/
+                app.js
+        index.html
+        pageA.html
+        pageB.html
+```
+
+**config.js** : config for the FreedomPortal app.
+
+**package.json** : config for the node app.
+
+**www** : folder containing your html, css and other assets. 
+
+
+Getting started
+-----------------
+
+First, you must have node.js and npm installed on your system.
+
+Then, with your terminal create a folder and inside that folder initialize the node app :
+
+```
+mkdir my-app
+cd my-app
+npm init
+```
+
+Once this is done, install the FreedomPortal library : 
+
+```
+npm install --save freedom-portal
+```
+
+Finally create a config file for your FreedomPortal app. You can find an example [there](https://github.com/sebpiq/FreedomPortal/tree/master/bin/config-example.js).
+
+Then, you can try that everything works by starting the app :
+
+```
+node ./node_modules/freedom-portal/bin/main.js /absolute/path/to/config.js
+```
+
+And go to [http://localhost/](http://localhost/) with your browser, to see that your html pages and assets are served correctly.
+
+
+Deploying on a Wi-Fi router
+==============================
 
 Prepare USB key
 -------------------
 
 Format USB key, create a single partition **ext4** called **PORTALKEY** (to match the configurations in `scripts/`). The reason we need ext4, is that we need to be able to create symlinks.
 
-Copy the source code of the web server on the usb stick as well, under `PortalApp/`.
+Copy the source code of your FreedomPortal app on the usb stick as well, under `PortalApp/`.
 
-Create a `site-packages/` directory for Python dependencies of the menu game
-
-Create a `log/` directory for supervisord logs.
+Create a `log/` directory for log files.
 
 
 Prepare the router
@@ -61,7 +118,7 @@ For this step, the router needs Internet access.
 
 To make some space, we will remove some unused packages. Run the following :
 
-NB: the first and second commands might need to be ran twice, because packages we are trying to remove depend upon each other. 
+NB: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other. 
 
 ```
 opkg remove gl-inet luci luci-base luci-* lua lighttpd-* lighttpd
@@ -86,25 +143,8 @@ Then install `nodejs` :
 opkg install nodejs 
 ```
 
-Deploy Python server
-----------------------
-
-### Install Python dependencies
-
-From the menu game folder, install dependencies with :
-
-```
-pip install --target=/mnt/PORTALKEY/site-packages -r requirements.txt
-```
-
-
-### Setup supervisord on boot 
-
-Install python-supervisor with :
-
-```
-pip install supervisor
-```
+Start the app on boot
+------------------------
 
 Copy the script for starting the portal app on startup : 
 
@@ -130,8 +170,8 @@ You can test that everything works by launching the server with
 /etc/init.d/portalapp start
 ```
 
-Redirect all requests to the Python app
------------------------------------------
+Redirect all requests to the app
+------------------------------------
 
 ### Redirect DNS queries to the server's IP
 
@@ -187,9 +227,3 @@ Checklist works
 ```
 
 Title 32 characters max (because of SSID).
-
-
-TODO
-=====
-
-- captive portal for iOS
