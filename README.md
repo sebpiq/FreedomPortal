@@ -42,7 +42,7 @@ my-app/
 
 **config.js** : config for the FreedomPortal app.
 
-**package.json** : config for the node app.
+**package.json** : config for node.js.
 
 **www** : folder containing your html, css and other assets. 
 
@@ -74,7 +74,7 @@ Then, you can try that everything works by starting the app :
 node ./node_modules/freedom-portal/bin/main.js /absolute/path/to/config.js
 ```
 
-And go to [http://localhost/](http://localhost/) with your browser, to see that your html pages and assets are served correctly.
+And go to [http://localhost/](http://localhost/) with your browser, to check that your html pages and assets are served correctly.
 
 
 Deploying on a Wi-Fi router
@@ -90,19 +90,18 @@ Copy the source code of your FreedomPortal app on the usb stick as well, under `
 Create a `log/` directory for log files.
 
 
-Prepare the router
---------------------
-
-### Initialize password, connect through SSH
+Initialize router password, connect through SSH
+------------------------------------------------
 
 On first connection, go to the router's web interface to set a password which will be used to connect through SSH.
 
 Use that password to connect through SSH.
 
 
-### Deactivate default web server
+Deactivate router's web server
+--------------------------------
 
-We need to stop the default web server, and disable it so it won't be started at next boot.
+We need to stop the default router's web server, and disable it so it won't be started at next boot.
 
 ```
 /etc/init.d/uhttpd stop
@@ -112,7 +111,8 @@ We need to stop the default web server, and disable it so it won't be started at
 ```
 
 
-### Install / remove packages 
+Install / remove packages 
+----------------------------
 
 For this step, the router needs Internet access.
 
@@ -205,16 +205,19 @@ Setup wireless
 in `/etc/config/wireless` change the encryption option to `none` and change the `ssid`. Max length of SSID is 32 characters!
 
 
-Checklist testing
-====================
+Checklists
+=============
+
+Testing
+-----------
 
 - try to put an https address in address bar
 - try to put IP address in address bar
 - try to put non-https url
 
 
-Checklist works
-==================
+HTML page basics
+-------------------
 
 ```
 <!DOCTYPE html>
@@ -225,5 +228,3 @@ Checklist works
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>192.168.0.1:Where the WiFi comes from</title>
 ```
-
-Title 32 characters max (because of SSID).
