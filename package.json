@@ -1,0 +1,25 @@
+{
+  "name": "freedom-portal",
+  "version": "1.0.0",
+  "description": "An exhibition of digital artworks installed on Wi-Fi routers spread out in the public space",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebpiq/FreedomPortal.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebpiq/FreedomPortal/issues"
+  },
+  "homepage": "https://github.com/sebpiq/FreedomPortal#readme",
+  "dependencies": {
+    "captive-portal": "^0.1.0",
+    "express": "^4.14.0",
+    "forever": "^0.15.3"
+  },
+  "bin": {
+    "freedom_portal": "./bin/main.js"
+  }
+}

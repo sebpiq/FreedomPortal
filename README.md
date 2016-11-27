@@ -1,6 +1,25 @@
+FreedomPortal
+==============
+
+The Freedom Portal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
+
+These instructions explain how to setup a wifi router and :
+
+    install a Python server (see bootstrap code there better instructions and example on how to use this will come).
+    have the Python server start automatically on boot of the router, and restart if it crashed.
+    Setup DNS and firewall so that all requests will redirect to that Python server.
+
+In order to use these instructions, You need a Wi-Fi router:
+
+    able to support openWRT (https://openwrt.org/)
+    with a USB port so you can plug a USB key to extend the router's disk space
+    with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
+
+We have been using GL-inet routers, which have all of the above, and come with openWRT pre-installed.
+
+
 Config
 ========
-
 
 Prepare USB key
 -------------------
@@ -42,8 +61,12 @@ For this step, the router needs Internet access.
 
 To make some space, we will remove some unused packages. Run the following :
 
+NB: the first and second commands might need to be ran twice, because packages we are trying to remove depend upon each other. 
+
 ```
 opkg remove gl-inet luci luci-base luci-* lua lighttpd-* lighttpd
+opkg remove gl-inet luci luci-base luci-* lua lighttpd-* lighttpd
+opkg remove kmod-video*
 opkg remove kmod-video*
 opkg remove mjpg-streamer
 rm -rf /usr/lib/lua
@@ -57,25 +80,11 @@ Then to install the packages we need, first update repo with :
 opkg update
 ```
 
-Then install `python` : 
+Then install `nodejs` : 
 
 ```
-opkg install python python-openssl 
+opkg install nodejs 
 ```
-
-And install `pip` with one of these 2 alternatives :
-
-```
-opkg install python-pip
-```
-
-or
-
-```
-opkg install distribute
-easy_install pip
-```
-
 
 Deploy Python server
 ----------------------
