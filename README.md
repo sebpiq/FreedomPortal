@@ -1,20 +1,20 @@
 FreedomPortal
 ==============
 
-The Freedom Portal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
+The FreedomPortal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
 
 These instructions explain how to :
 
-    - create a FreedomPortal app
-    - deploy that app on a Wi-Fi router, so that it act as a captive portal for all clients connecting
+- create a FreedomPortal app
+- deploy that app on a Wi-Fi router, so that it act as a captive portal for all clients connecting
 
 In order to use these instructions, You need a Wi-Fi router:
 
-    - able to support openWRT (https://openwrt.org/)
-    - with a USB port so you can plug a USB key to extend the router's disk space
-    - with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
+- able to support openWRT (https://openwrt.org/)
+- with a USB port so you can plug a USB key to extend the router's disk space
+- with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
 
-We have been using GL-inet routers, which have all of the above, and come with openWRT pre-installed.
+We have been using GL-inet routers, which have all of the above, and come with openWRT pre-installed. Following instructions are for these specific routers, but can be easily adapted to another model.
 
 
 Creating a FreedomPortal app
@@ -40,11 +40,9 @@ my-app/
         pageB.html
 ```
 
-**config.js** : config for the FreedomPortal app.
-
-**package.json** : config for node.js.
-
-**www** : folder containing your html, css and other assets. 
+- **config.js** : config for the FreedomPortal app.
+- **package.json** : config for node.js.
+- **www** : folder containing your html, css and other assets. 
 
 
 Getting started
@@ -74,7 +72,7 @@ Then, you can try that everything works by starting the app :
 node ./node_modules/freedom-portal/bin/main.js /absolute/path/to/config.js
 ```
 
-And go to [http://localhost/](http://localhost/) with your browser, to check that your html pages and assets are served correctly.
+Go to [http://localhost/](http://localhost/) with your browser, check that your html pages and assets are served correctly.
 
 
 Deploying on a Wi-Fi router
@@ -83,9 +81,9 @@ Deploying on a Wi-Fi router
 Prepare USB key
 -------------------
 
-Format USB key, create a single partition **ext4** called **PORTALKEY** (to match the configurations in `scripts/`). The reason we need ext4, is that we need to be able to create symlinks.
+Format a USB key, create a single partition **ext4** called **PORTALKEY** (to match the configurations in `scripts/`). The reason we need ext4, is that we need to be able to create symlinks.
 
-Copy the source code of your FreedomPortal app on the usb stick as well, under `PortalApp/`.
+Copy the source code of your FreedomPortal app on the usb stick under `PortalApp/`.
 
 Create a `log/` directory for log files.
 
@@ -93,9 +91,9 @@ Create a `log/` directory for log files.
 Initialize router password, connect through SSH
 ------------------------------------------------
 
-On first connection, go to the router's web interface to set a password which will be used to connect through SSH.
+On first connection on GL-inet routers, go to the router's web interface [192.168.8.1](http://192.168.8.1) to set a password which will be used to connect through SSH.
 
-Use that password to connect through SSH.
+Use that password to connect through SSH `ssh root@192.168.8.1` .
 
 
 Deactivate router's web server
@@ -149,7 +147,7 @@ Start the app on boot
 Copy the script for starting the portal app on startup : 
 
 ```
-cp scripts/portalapp-init.d /etc/init.d/portalapp
+cp /mnt/PORTALKEY/PortalApp/node_modules/freedom-portal/scripts/portalapp-init.d /etc/init.d/portalapp
 ```
 
 make it executable : 
