@@ -1,0 +1,7 @@
+C4:85:08:B2:73:DE  -47 dBm / -95 dBm (SNR 48)  190 ms ago
+  RX: 72.2 MBit/s, MCS 7, 20MHz, short GI         3834 Pkts.
+  TX: 72.2 MBit/s, MCS 7, 20MHz, short GI         1115 Pkts.
+
+84:85:06:6C:01:51  -61 dBm / -95 dBm (SNR 34)  70 ms ago
+  RX: 65.0 MBit/s, MCS 7, 20MHz                     97 Pkts.
+  TX: 39.0 MBit/s, MCS 4, 20MHz                     19 Pkts.

@@ -66,14 +66,6 @@ npm install --save freedom-portal
 
 Finally create a config file for your FreedomPortal app. You can find an example [there](https://github.com/sebpiq/FreedomPortal/tree/master/bin/config-example.js).
 
-Then, you can try that everything works by starting the app :
-
-```
-node ./node_modules/freedom-portal/bin/main.js /absolute/path/to/config.js
-```
-
-Go to [http://localhost/](http://localhost/) with your browser, check that your html pages and assets are served correctly.
-
 
 Deploying on a Wi-Fi router
 ==============================
@@ -81,11 +73,22 @@ Deploying on a Wi-Fi router
 Prepare USB key
 -------------------
 
-Format a USB key, create a single partition **ext4** called **PORTALKEY** (to match the configurations in `scripts/`). The reason we need ext4, is that we need to be able to create symlinks.
+Format a USB key, create a single partition called **PORTALKEY** (to match the configurations in `scripts/`).
 
 Copy the source code of your FreedomPortal app on the usb stick under `PortalApp/`.
 
 Create a `log/` directory for log files.
+
+Your USB key should have the following structure : 
+
+```
+log/
+PortalApp/
+    config.js
+    package.json
+    www/
+        ...
+```
 
 
 Initialize router password, connect through SSH
@@ -226,3 +229,8 @@ HTML page basics
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>192.168.0.1:Where the WiFi comes from</title>
 ```
+
+Credits
+==========
+
+This project was partly funded by The Creative Exchange, a UK Arts & Humanities Research Council Knowledge Exchange Hub for the Creative Economy (UK research council reference AH/J005150/1 Creative Exchange). [thecreativeexchange.org.uk](http://thecreativeexchange.org.uk)
