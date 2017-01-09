@@ -46,26 +46,44 @@ Test_clients = {}
 
     function Test_clients:test_save()
         local clients_table = {
-            ['AA:BB:CC:DD:EE:FF'] = '77.99.88.66',
-            ['11:22:33:44:55:66'] = '1.2.3.4', 
+            ['AA:BB:CC:DD:EE:FF'] = { 
+                ip = '77.99.88.66',
+                status = 'bla',
+            },
+            ['11:22:33:44:55:66'] = {
+                ip = '1.2.3.4',
+                some_attr = 'blo'
+            }, 
         }
         clients.save(clients_table)
         local file = io.open(clients.CLIENTS_FILE_PATH, 'r')
 
         local actual = file:read('*a')
-        local expected = 'AA:BB:CC:DD:EE:FF 77.99.88.66\n11:22:33:44:55:66 1.2.3.4\n'
+        local expected = [[
+mac AA:BB:CC:DD:EE:FF status bla ip 77.99.88.66 
+mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4 
+]]
         luaunit.assertEquals(actual, expected)
     end
 
     function Test_clients:test_get()
         local file = io.open(clients.CLIENTS_FILE_PATH, 'w')
-        file:write('AA:BB:CC:DD:EE:FF 77.99.88.66\n11:22:33:44:55:66 1.2.3.4\n')
+        file:write([[
+mac AA:BB:CC:DD:EE:FF status bla ip 77.99.88.66 
+mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4 
+]])
         file:close()
         
         local actual = clients.get()
         local expected = {
-            ['AA:BB:CC:DD:EE:FF'] = '77.99.88.66',
-            ['11:22:33:44:55:66'] = '1.2.3.4', 
+            ['AA:BB:CC:DD:EE:FF'] = { 
+                ip = '77.99.88.66',
+                status = 'bla',
+            },
+            ['11:22:33:44:55:66'] = {
+                ip = '1.2.3.4',
+                some_attr = 'blo'
+            }, 
         }
         luaunit.assertEquals(actual, expected)
     end
