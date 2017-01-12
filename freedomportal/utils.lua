@@ -41,8 +41,21 @@ local function arp_parse(file_path)
     return clients_table
 end
 
+-- Bitwise or. Needed because Lua 5.1 has not bitwise operations
+-- http://stackoverflow.com/questions/5977654/lua-bitwise-logical-operations
+local function bitwise_or(a,b)
+    local p,c=1,0
+    while a+b>0 do
+        local ra,rb=a%2,b%2
+        if ra+rb>0 then c=c+p end
+        a,b,p=(a-ra)/2,(b-rb)/2,p*2
+    end
+    return c
+end
+
 return {
     find_IPv4 = find_IPv4,
     find_MAC = find_MAC,
     arp_parse = arp_parse,
+    bitwise_or = bitwise_or,
 }
