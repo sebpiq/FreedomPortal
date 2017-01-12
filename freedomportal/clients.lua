@@ -1,3 +1,5 @@
+-- TODO : decouple clients data storage (_read_file, _replace_file, ...)
+-- from high level clients operations (refresh, get, set_field)
 local posix = require('posix')
 local utils = require('freedomportal.utils')
 
@@ -35,7 +37,7 @@ local function _release_file_lock(fd)
     posix.fcntl(fd, posix.F_SETLK, lock)
 end
 
-local function _read_file_posix(fd)
+local function _read_file(fd)
     local contents = ''
     local string_read = nil
     repeat
@@ -43,6 +45,25 @@ local function _read_file_posix(fd)
         contents = contents .. string_read
     until string_read:len() < 256
     return contents
+end
+
+local function _replace_file(get_new_contents)
+    local flags = utils.bitwise_or(posix.O_RDWR, posix.O_SYNC)
+    local fd = _acquire_file_lock(flags, posix.F_WRLCK)
+    posix.lseek(fd, 0, posix.SEEK_SET)
+    local contents_old = _read_file(fd)
+    local contents_new = get_new_contents(contents_old)
+
+    -- with posix on OpenWrt, it doesn't seem like we can truncate a file, 
+    -- so we can free space from a file that became smaller.
+    -- Instead, we just replace the extra space by whitespace characters...
+    while string.len(contents_new) < string.len(contents_old) do
+        contents_new = contents_new .. ' ' 
+    end
+    posix.lseek(fd, 0, posix.SEEK_SET)
+    posix.write(fd, contents_new)
+    posix.close(fd)
+    _release_file_lock(fd)
 end
 
 local function _serialize(clients_table)
@@ -75,45 +96,73 @@ end
 -- Gets the client table from the clients file
 local function get()
     local fd = _acquire_file_lock(posix.O_RDONLY, posix.F_RDLCK)
-    local clients_serialized = _read_file_posix(fd)
+    local clients_serialized = _read_file(fd)
     _release_file_lock(fd)
     return _deserialize(clients_serialized)
 end
 
 -- Refreshes the file of connected clients in an atomic way. 
--- get_connected_clients is a function that must return a table of 
--- currently connected clients: { mac = ip } 
+-- `get_connected_clients` is a function that must return a table of 
+-- currently connected clients: `{ mac = ip }`
 local function refresh(get_connected_clients)
-    
-    local flags = utils.bitwise_or(utils.bitwise_or(posix.O_RDWR, posix.O_SYNC), posix.O_TRUNC)
-    local fd = _acquire_file_lock(flags, posix.F_WRLCK)
-    local clients_table = _deserialize(_read_file_posix(fd))
-    local connected_clients_table = get_connected_clients()
+    _replace_file(function(clients_serialized)
+        local connected_clients_table = get_connected_clients()
+        local clients_table = _deserialize(clients_serialized)
 
-    -- We add all connected clients to clients_table if they are not there yet 
-    for mac, ip in pairs(connected_clients_table) do
-        if not clients_table[mac] then
-            clients_table[mac] = { ip = ip, }
+        -- We add all connected clients to clients_table if they are not there yet 
+        for mac, ip in pairs(connected_clients_table) do
+            if not clients_table[mac] then
+                clients_table[mac] = { ip = ip, }
+            end
         end
-    end
 
-    -- We remove all clients from clients_table that are not connected
-    for mac, infos in pairs(clients_table) do
-        if not connected_clients_table[mac] then
-            clients_table[mac] = nil
+        -- We remove all clients from clients_table that are not connected
+        for mac, infos in pairs(clients_table) do
+            if not connected_clients_table[mac] then
+                clients_table[mac] = nil
+            end
+        end        
+
+        return _serialize(clients_table)
+    end)
+end
+
+-- Sets `key`, `value` for infos of client `ip` in an atomic way.
+-- `key` and `value` must be strings
+local function set_field(ip, key, value)
+    if type(key) ~= 'string' then error('key must be a string') end
+    if type(value) ~= 'string' then error('value must be a string') end
+
+    _replace_file(function(clients_serialized)
+        local clients_table = _deserialize(clients_serialized)
+
+        -- Search client by IP
+        for mac, infos in pairs(clients_table) do
+            if infos.ip == ip then
+                client_infos = infos
+                break
+            end
         end
-    end
 
-    posix.write(fd, _serialize(clients_table))
-    posix.close(fd)
-    _release_file_lock(fd)
+        -- If client found we set key, value and save the file
+        -- even if client is not found we must re-write the whole table, 
+        -- because of flags used to open it.
+        if client_infos then
+            client_infos[key] = value
+        else
+            print('WARN : client with ip ' .. ip .. ' could not be found')
+        end
+        return _serialize(clients_table)
+    end)
 end
 
 return {
-    _read_file_posix = _read_file_posix,
+    _read_file = _read_file,
+    _replace_file = _replace_file,
     _deserialize = _deserialize,
     _serialize = _serialize,
     refresh = refresh,
     get = get,
+    set_field = set_field,
     CLIENTS_FILE_PATH = CLIENTS_FILE_PATH,
 }

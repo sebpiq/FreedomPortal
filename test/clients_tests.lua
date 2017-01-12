@@ -39,16 +39,40 @@ Test_clients = {}
         luaunit.assertTrue(output2 == 'blabla\n' or output2 == 'bloblo\n')
     end]]
 
-    function Test_clients:test_read_file_posix_long_file()
+    function Test_clients:test_read_file_long_file()
         -- Writing long string to the file
-        local clients_file = io.open('/tmp/test_read_file_posix_long_file', 'w')
+        local file = io.open('/tmp/test_read_file_long_file', 'w')
         local long_string = make_string(2000)
-        clients_file:write(long_string)
-        clients_file:close()
+        file:write(long_string)
+        file:close()
         
         -- using our function to read the string
-        local fd = posix.open('/tmp/test_read_file_posix_long_file', posix.O_RDONLY)
-        luaunit.assertEquals(clients._read_file_posix(fd), long_string)
+        local fd = posix.open('/tmp/test_read_file_long_file', posix.O_RDONLY)
+        luaunit.assertEquals(clients._read_file(fd), long_string)
+    end
+
+    function Test_clients:test_replace_file()
+        local file = io.open(clients.CLIENTS_FILE_PATH, 'w')
+        file:write('bla bla bla')
+        file:close()
+
+        clients._replace_file(function(old_contents)
+            luaunit.assertEquals(old_contents, 'bla bla bla')
+            return 'blo blo blo blo'
+        end)
+        local file = io.open(clients.CLIENTS_FILE_PATH, 'r')
+        luaunit.assertEquals(file:read('*a'), 'blo blo blo blo')
+        file:close()
+
+        -- Try with new contents shorter, all extra chars replaced by whitespace
+        clients._replace_file(function(old_contents)
+            luaunit.assertEquals(old_contents, 'blo blo blo blo')
+            return 'ble'
+        end)
+        local file = io.open(clients.CLIENTS_FILE_PATH, 'r')
+        luaunit.assertEquals(file:read('*a'), 'ble            ')
+        file:close()
+
     end
 
     function Test_clients:test_serialize()
@@ -150,5 +174,73 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
             },
         })
     end
+
+    function Test_clients:test_set()
+        -- Initialize clients
+        clients.refresh(function ()
+            return {
+                ['AA:BB:CC:DD:EE:FF'] = '2.2.2.2', 
+                ['11:22:33:44:55:66'] = '1.1.1.1',
+            }
+        end)
+
+        -- Set attributes
+        clients.set_field('2.2.2.2', 'bla', '12345')
+        luaunit.assertEquals(clients.get(), {
+            ['11:22:33:44:55:66'] = {
+                ip = '1.1.1.1',
+            },
+            ['AA:BB:CC:DD:EE:FF'] = {
+                ip = '2.2.2.2',
+                bla = '12345'
+            },
+        })
+
+        clients.set_field('1.1.1.1', 'yyy', 'blo')
+        luaunit.assertEquals(clients.get(), {
+            ['11:22:33:44:55:66'] = {
+                ip = '1.1.1.1',
+                yyy = 'blo',
+            },
+            ['AA:BB:CC:DD:EE:FF'] = {
+                ip = '2.2.2.2',
+                bla = '12345',
+            },
+        })
+
+        clients.set_field('2.2.2.2', 'bla', 'uuu')
+        luaunit.assertEquals(clients.get(), {
+            ['11:22:33:44:55:66'] = {
+                ip = '1.1.1.1',
+                yyy = 'blo',
+            },
+            ['AA:BB:CC:DD:EE:FF'] = {
+                ip = '2.2.2.2',
+                bla = 'uuu',
+            },
+        })
+    end
+
+    function Test_clients:test_set_noop_if_ip_not_found()
+        -- Initialize clients
+        clients.refresh(function ()
+            return {
+                ['AA:BB:CC:DD:EE:FF'] = '2.2.2.2', 
+                ['11:22:33:44:55:66'] = '1.1.1.1',
+            }
+        end)
+
+        -- Set attributes
+        clients.set_field('3.3.3.3', 'bla', '12345')
+        luaunit.assertEquals(clients.get(), {
+            ['11:22:33:44:55:66'] = {
+                ip = '1.1.1.1',
+            },
+            ['AA:BB:CC:DD:EE:FF'] = {
+                ip = '2.2.2.2',
+            },
+        })
+    end
+
 
 os.exit(luaunit.LuaUnit.run())
