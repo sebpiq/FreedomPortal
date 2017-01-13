@@ -1,9 +1,9 @@
--- TODO : decouple clients data storage (_serielize, _deserialize, _read_file, _replace_file, ...)
+-- TODO : decouple clients data storage (_serielize, _deserialize, _posix_read_all, _replace_file, ...)
 -- from high level clients operations (refresh, get, set_fields)
 local posix = require('posix')
 local utils = require('freedomportal.utils')
 
-local CLIENTS_FILE_PATH = 'file.txt'
+local CLIENTS_FILE_PATH = '/tmp/freedomportal_clients.txt'
 
 -- Acquire the lock to safely read / write in the clients file
 local function _acquire_file_lock(open_mode, lock_mode)
@@ -37,7 +37,7 @@ local function _release_file_lock(fd)
     posix.fcntl(fd, posix.F_SETLK, lock)
 end
 
-local function _read_file(fd)
+local function _posix_read_all(fd)
     local contents = ''
     local string_read = nil
     repeat
@@ -47,11 +47,18 @@ local function _read_file(fd)
     return contents
 end
 
+local function _read_file()
+    local fd = _acquire_file_lock(posix.O_RDONLY, posix.F_RDLCK)
+    local contents = _posix_read_all(fd)
+    _release_file_lock(fd)
+    return contents
+end
+
 local function _replace_file(get_new_contents)
     local flags = utils.bitwise_or(posix.O_RDWR, posix.O_SYNC)
     local fd = _acquire_file_lock(flags, posix.F_WRLCK)
     posix.lseek(fd, 0, posix.SEEK_SET)
-    local contents_old = _read_file(fd)
+    local contents_old = _posix_read_all(fd)
     local contents_new = get_new_contents(contents_old)
 
     -- with posix on OpenWrt, it doesn't seem like we can truncate a file, 
@@ -95,10 +102,7 @@ end
 
 -- Returns the client table of all currently connected clients
 local function get_all()
-    local fd = _acquire_file_lock(posix.O_RDONLY, posix.F_RDLCK)
-    local clients_serialized = _read_file(fd)
-    _release_file_lock(fd)
-    return _deserialize(clients_serialized)
+    return _deserialize(_read_file())
 end
 
 -- Returns the infos for client `ip`
@@ -166,6 +170,7 @@ local function set_fields(ip, fields_table)
 end
 
 return {
+    _posix_read_all = _posix_read_all,
     _read_file = _read_file,
     _replace_file = _replace_file,
     _deserialize = _deserialize,

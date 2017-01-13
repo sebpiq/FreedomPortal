@@ -57,5 +57,3 @@ Test_handlers_main = {}
             some_attr = '67890',
         })
     end
-
-os.exit(luaunit.LuaUnit.run())

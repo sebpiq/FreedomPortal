@@ -56,5 +56,3 @@ Test_utils = {}
         })
         luaunit.assertEquals(utils.search_collection(table, 'b', 'bly'), nil)        
     end
-
-os.exit(luaunit.LuaUnit.run())

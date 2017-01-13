@@ -22,14 +22,14 @@ Test_clients = {}
         clients_file:close()
     end
 
-    --[[function Test_clients:test_read_write_clients_file_concurrent()
+    function Test_clients:test_read_write_clients_file_concurrent()
         local clients_file = io.open(clients.CLIENTS_FILE_PATH, 'w')
         clients_file:write('bloblo')
         clients_file:close()
 
-        local read_process1 = assert(io.popen('lua test/read_clients_file.lua', 'r'))
-        local write_process = assert(io.popen('lua test/write_clients_file.lua', 'r'))
-        local read_process2 = assert(io.popen('lua test/read_clients_file.lua', 'r'))
+        local read_process1 = assert(io.popen('lua test/samples/read_clients_file.lua', 'r'))
+        local write_process = assert(io.popen('lua test/samples/write_clients_file.lua', 'r'))
+        local read_process2 = assert(io.popen('lua test/samples/read_clients_file.lua', 'r'))
         local output1 = read_process1:read('*all')
         local output2 = read_process2:read('*all')
         read_process1:close()
@@ -37,9 +37,9 @@ Test_clients = {}
         write_process:close()
         luaunit.assertTrue(output1 == 'blabla\n' or output1 == 'bloblo\n')
         luaunit.assertTrue(output2 == 'blabla\n' or output2 == 'bloblo\n')
-    end]]
+    end
 
-    function Test_clients:test_read_file_long_file()
+    function Test_clients:test_posix_read_all_long_file()
         -- Writing long string to the file
         local file = io.open('/tmp/test_read_file_long_file', 'w')
         local long_string = make_string(2000)
@@ -48,7 +48,7 @@ Test_clients = {}
         
         -- using our function to read the string
         local fd = posix.open('/tmp/test_read_file_long_file', posix.O_RDONLY)
-        luaunit.assertEquals(clients._read_file(fd), long_string)
+        luaunit.assertEquals(clients._posix_read_all(fd), long_string)
     end
 
     function Test_clients:test_replace_file()
@@ -277,6 +277,3 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
             },
         })
     end
-
-
-os.exit(luaunit.LuaUnit.run())
