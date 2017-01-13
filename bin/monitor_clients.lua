@@ -12,6 +12,7 @@ local ARP_FILEPATH = '/proc/net/arp'
 
 while true do
     clients.refresh(function()
+        local clients_table = {}
         -- Table {MAC -> infos} containing only currently connected clients
         local connected_clients_table = iwinfo[iwinfo.type(INTERFACE)].assoclist(INTERFACE)
         -- Table {MAC -> IP} 
@@ -19,12 +20,12 @@ while true do
 
         for mac, infos in pairs(connected_clients_table) do
             if type(mac_ip_table[mac]) == 'string' then
-                connected_clients_table[mac] = mac_ip_table[mac]
+                clients_table[mac] = mac_ip_table[mac]
             else
                 print('warning : couldnt find an IP mapping for MAC address ' .. mac)
             end
         end
-        return connected_clients_table
+        return clients_table
     end)
     posix.sleep(1)
 end
