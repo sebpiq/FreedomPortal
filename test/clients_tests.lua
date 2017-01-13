@@ -111,7 +111,7 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
         luaunit.assertEquals(clients._deserialize(clients_serialized), expected)
     end
 
-    function Test_clients:test_get()
+    function Test_clients:test_get_all()
         local file = io.open(clients.CLIENTS_FILE_PATH, 'w')
         file:write([[
 mac AA:BB:CC:DD:EE:FF status bla ip 77.99.88.66 
@@ -119,7 +119,7 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
 ]])
         file:close()
         
-        local actual = clients.get()
+        local actual = clients.get_all()
         local expected = {
             ['AA:BB:CC:DD:EE:FF'] = { 
                 ip = '77.99.88.66',
@@ -133,49 +133,76 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
         luaunit.assertEquals(actual, expected)
     end
 
+    function Test_clients:test_get()
+        local file = io.open(clients.CLIENTS_FILE_PATH, 'w')
+        file:write([[
+mac AA:BB:CC:DD:EE:FF status bla ip 77.99.88.66 
+mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4 
+]])
+        file:close()
+        
+        local actual = clients.get('1.2.3.4')
+        local expected = {
+            ip = '1.2.3.4',
+            some_attr = 'blo'
+        }
+        luaunit.assertEquals(actual, expected)
+    end
+
     function Test_clients:test_refresh()
+        local actual = nil
+        local expected = nil
+
         -- New connection
-        clients.refresh(function ()
+        actual = clients.refresh(function ()
             return {
                 ['11:22:33:44:55:66'] = '1.1.1.1',
             }
         end)
-        luaunit.assertEquals(clients.get(), {
+        expected = {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
             },
-        })
+        }
+        luaunit.assertEquals(clients.get_all(), expected)
+        luaunit.assertEquals(actual, expected)
 
         -- Another new connection
-        clients.refresh(function()
+        actual = clients.refresh(function()
             return {
                 ['AA:BB:CC:DD:EE:FF'] = '2.2.2.2', 
                 ['11:22:33:44:55:66'] = '1.1.1.1',
             }
         end)
-        luaunit.assertEquals(clients.get(), {
+        expected = {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
             },
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
             },
-        })
+        }
+        luaunit.assertEquals(clients.get_all(), expected)
+        luaunit.assertEquals(actual, expected)
 
         -- Disconnection
-        clients.refresh(function()
+        actual = clients.refresh(function()
             return {
                 ['AA:BB:CC:DD:EE:FF'] = '2.2.2.2', 
             }        
         end)
-        luaunit.assertEquals(clients.get(), {
+        expected = {
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
             },
-        })
+        }
+        luaunit.assertEquals(clients.get_all(), expected)
+        luaunit.assertEquals(actual, expected)
     end
 
-    function Test_clients:test_set()
+    function Test_clients:test_set_fields()
+        local expected = nil
+        local actual = nil
         -- Initialize clients
         clients.refresh(function ()
             return {
@@ -185,11 +212,28 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
         end)
 
         -- Set attributes
-        clients.set_fields('2.2.2.2', {bla = '12345', blo = '67890'})
-        luaunit.assertEquals(clients.get(), {
+        actual = clients.set_fields('2.2.2.2', {bla = '12345', blo = '67890'})
+        expected = {
+            ip = '2.2.2.2',
+            bla = '12345',
+            blo = '67890',
+        }
+        luaunit.assertEquals(actual, expected)
+        luaunit.assertEquals(clients.get_all(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
             },
+            ['AA:BB:CC:DD:EE:FF'] = expected,
+        })
+
+        actual = clients.set_fields('1.1.1.1', {yyy = 'blo'})
+        expected = {
+            ip = '1.1.1.1',
+            yyy = 'blo',
+        }
+        luaunit.assertEquals(actual, expected)
+        luaunit.assertEquals(clients.get_all(), {
+            ['11:22:33:44:55:66'] = expected,
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
                 bla = '12345',
@@ -197,30 +241,19 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
             },
         })
 
-        clients.set_fields('1.1.1.1', {yyy = 'blo'})
-        luaunit.assertEquals(clients.get(), {
+        actual = clients.set_fields('2.2.2.2', {bla = 'uuu'})
+        expected = {
+            ip = '2.2.2.2',
+            bla = 'uuu',
+            blo = '67890',
+        }
+        luaunit.assertEquals(actual, expected)
+        luaunit.assertEquals(clients.get_all(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
                 yyy = 'blo',
             },
-            ['AA:BB:CC:DD:EE:FF'] = {
-                ip = '2.2.2.2',
-                bla = '12345',
-                blo = '67890',
-            },
-        })
-
-        clients.set_fields('2.2.2.2', {bla = 'uuu'})
-        luaunit.assertEquals(clients.get(), {
-            ['11:22:33:44:55:66'] = {
-                ip = '1.1.1.1',
-                yyy = 'blo',
-            },
-            ['AA:BB:CC:DD:EE:FF'] = {
-                ip = '2.2.2.2',
-                bla = 'uuu',
-                blo = '67890',
-            },
+            ['AA:BB:CC:DD:EE:FF'] = expected,
         })
     end
 
@@ -235,7 +268,7 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
 
         -- Set attributes
         clients.set_fields('3.3.3.3', {bla = '12345'})
-        luaunit.assertEquals(clients.get(), {
+        luaunit.assertEquals(clients.get_all(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
             },

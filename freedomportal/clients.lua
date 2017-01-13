@@ -93,21 +93,27 @@ local function _deserialize(clients_serialized)
     return clients_table
 end
 
--- Gets the client table from the clients file
-local function get()
+-- Returns the client table of all currently connected clients
+local function get_all()
     local fd = _acquire_file_lock(posix.O_RDONLY, posix.F_RDLCK)
     local clients_serialized = _read_file(fd)
     _release_file_lock(fd)
     return _deserialize(clients_serialized)
 end
 
+-- Returns the infos for client `ip`
+local function get(ip)
+    return utils.search_collection(get_all(), 'ip', ip) 
+end
+
 -- Refreshes the file of connected clients in an atomic way. 
 -- `get_connected_clients` is a function that must return a table of 
 -- currently connected clients: `{ mac = ip }`
 local function refresh(get_connected_clients)
+    local clients_table
     _replace_file(function(clients_serialized)
         local connected_clients_table = get_connected_clients()
-        local clients_table = _deserialize(clients_serialized)
+        clients_table = _deserialize(clients_serialized)
 
         -- We add all connected clients to clients_table if they are not there yet 
         for mac, ip in pairs(connected_clients_table) do
@@ -125,6 +131,7 @@ local function refresh(get_connected_clients)
 
         return _serialize(clients_table)
     end)
+    return clients_table
 end
 
 -- Sets infos of client `ip` in an atomic way.
@@ -135,16 +142,12 @@ local function set_fields(ip, fields_table)
         if type(value) ~= 'string' then error('values must be strings, invalid : ' .. value) end
     end
 
+    local client_infos
     _replace_file(function(clients_serialized)
         local clients_table = _deserialize(clients_serialized)
 
         -- Search client by IP
-        for mac, infos in pairs(clients_table) do
-            if infos.ip == ip then
-                client_infos = infos
-                break
-            end
-        end
+        client_infos = utils.search_collection(clients_table, 'ip', ip)
 
         -- If client found we set key, value and save the file
         -- even if client is not found we must re-write the whole table, 
@@ -158,6 +161,8 @@ local function set_fields(ip, fields_table)
         end
         return _serialize(clients_table)
     end)
+
+    return client_infos
 end
 
 return {
@@ -166,6 +171,7 @@ return {
     _deserialize = _deserialize,
     _serialize = _serialize,
     refresh = refresh,
+    get_all = get_all,
     get = get,
     set_fields = set_fields,
     CLIENTS_FILE_PATH = CLIENTS_FILE_PATH,

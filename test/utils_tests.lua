@@ -30,13 +30,31 @@ Test_utils = {}
         luaunit.assertEquals(utils.find_MAC('11:22:33:777:55:ee'), nil)
     end
 
-    function Test_utils:test_arp_parse()
-        local actual = utils.arp_parse('./test/samples/arp.txt')
-        local expected = {
-            ['84:85:06:6C:01:51'] = '192.168.8.117',
-            ['C4:85:08:B2:73:DE'] = '192.168.8.166', 
+    function Test_utils:test_search_collection()
+        local table = {
+            {
+                a = 'poi',
+                b = 'blo'
+            },
+            {
+                a = 'pou',
+                b = 'bla'
+            },
+            {
+                a = 'pou',
+                b = 'bli'
+            }
         }
-        luaunit.assertEquals(actual, expected)
+
+        luaunit.assertEquals(utils.search_collection(table, 'a', 'pou'), {
+            a = 'pou',
+            b = 'bla'
+        })
+        luaunit.assertEquals(utils.search_collection(table, 'b', 'blo'), {
+            a = 'poi',
+            b = 'blo'
+        })
+        luaunit.assertEquals(utils.search_collection(table, 'b', 'bly'), nil)        
     end
 
 os.exit(luaunit.LuaUnit.run())

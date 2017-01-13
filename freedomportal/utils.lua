@@ -27,20 +27,6 @@ local function find_MAC(str)
         .. d:upper() .. ':' .. e:upper() .. ':' .. f:upper()
 end
 
-
-local function arp_parse(file_path)
-    local clients_table = {}
-    for line in io.lines(file_path, 'r') do
-        local result_ip = find_IPv4(line)
-        local result_mac = nil
-        if result_ip then
-          result_mac = find_MAC(line)
-          if result_mac then clients_table[result_mac] = result_ip end
-        end
-    end
-    return clients_table
-end
-
 -- Bitwise or. Needed because Lua 5.1 has not bitwise operations
 -- http://stackoverflow.com/questions/5977654/lua-bitwise-logical-operations
 local function bitwise_or(a,b)
@@ -53,9 +39,21 @@ local function bitwise_or(a,b)
     return c
 end
 
+-- Helper to find a client by its ip
+local function search_collection(table, key, value)
+    local found = nil
+    for ind, elem in pairs(table) do
+        if elem[key] == value then
+            found = elem
+            break
+        end
+    end
+    return found
+end
+
 return {
     find_IPv4 = find_IPv4,
     find_MAC = find_MAC,
-    arp_parse = arp_parse,
     bitwise_or = bitwise_or,
+    search_collection = search_collection,
 }
