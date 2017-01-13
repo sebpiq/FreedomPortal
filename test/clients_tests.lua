@@ -185,18 +185,19 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
         end)
 
         -- Set attributes
-        clients.set_field('2.2.2.2', 'bla', '12345')
+        clients.set_fields('2.2.2.2', {bla = '12345', blo = '67890'})
         luaunit.assertEquals(clients.get(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
             },
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
-                bla = '12345'
+                bla = '12345',
+                blo = '67890',
             },
         })
 
-        clients.set_field('1.1.1.1', 'yyy', 'blo')
+        clients.set_fields('1.1.1.1', {yyy = 'blo'})
         luaunit.assertEquals(clients.get(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
@@ -205,10 +206,11 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
                 bla = '12345',
+                blo = '67890',
             },
         })
 
-        clients.set_field('2.2.2.2', 'bla', 'uuu')
+        clients.set_fields('2.2.2.2', {bla = 'uuu'})
         luaunit.assertEquals(clients.get(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',
@@ -217,6 +219,7 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
             ['AA:BB:CC:DD:EE:FF'] = {
                 ip = '2.2.2.2',
                 bla = 'uuu',
+                blo = '67890',
             },
         })
     end
@@ -231,7 +234,7 @@ mac 11:22:33:44:55:66 some_attr blo ip 1.2.3.4
         end)
 
         -- Set attributes
-        clients.set_field('3.3.3.3', 'bla', '12345')
+        clients.set_fields('3.3.3.3', {bla = '12345'})
         luaunit.assertEquals(clients.get(), {
             ['11:22:33:44:55:66'] = {
                 ip = '1.1.1.1',

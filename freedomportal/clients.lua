@@ -1,5 +1,5 @@
--- TODO : decouple clients data storage (_read_file, _replace_file, ...)
--- from high level clients operations (refresh, get, set_field)
+-- TODO : decouple clients data storage (_serielize, _deserialize, _read_file, _replace_file, ...)
+-- from high level clients operations (refresh, get, set_fields)
 local posix = require('posix')
 local utils = require('freedomportal.utils')
 
@@ -127,11 +127,13 @@ local function refresh(get_connected_clients)
     end)
 end
 
--- Sets `key`, `value` for infos of client `ip` in an atomic way.
--- `key` and `value` must be strings
-local function set_field(ip, key, value)
-    if type(key) ~= 'string' then error('key must be a string') end
-    if type(value) ~= 'string' then error('value must be a string') end
+-- Sets infos of client `ip` in an atomic way.
+-- All keys and values of `fields_table` must be strings.
+local function set_fields(ip, fields_table)
+    for key, value in pairs(fields_table) do
+        if type(key) ~= 'string' then error('keys must be strings, invalid : ' .. key) end
+        if type(value) ~= 'string' then error('values must be strings, invalid : ' .. value) end
+    end
 
     _replace_file(function(clients_serialized)
         local clients_table = _deserialize(clients_serialized)
@@ -148,7 +150,9 @@ local function set_field(ip, key, value)
         -- even if client is not found we must re-write the whole table, 
         -- because of flags used to open it.
         if client_infos then
-            client_infos[key] = value
+            for key, value in pairs(fields_table) do
+                client_infos[key] = value
+            end
         else
             print('WARN : client with ip ' .. ip .. ' could not be found')
         end
@@ -163,6 +167,6 @@ return {
     _serialize = _serialize,
     refresh = refresh,
     get = get,
-    set_field = set_field,
+    set_fields = set_fields,
     CLIENTS_FILE_PATH = CLIENTS_FILE_PATH,
 }
