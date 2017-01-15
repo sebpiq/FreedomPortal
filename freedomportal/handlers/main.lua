@@ -3,9 +3,11 @@ local clients = require('freedomportal.clients')
 local config = require('freedomportal.config')
 
 local function run(wsapi_env)
+    
     local ip = wsapi_env.REMOTE_ADDR
     local update_client_infos = {}
-    
+    local logger = config.get('logger')
+
     -- Get client infos, refreshing the clients if our client was not found
     local client_infos = clients.get(ip)
     if not client_infos then
@@ -25,6 +27,10 @@ local function run(wsapi_env)
                 break
             end
         end
+        logger(ip .. '\n\tUser-Agent : ' .. wsapi_env.HTTP_USER_AGENT 
+            .. '\n\tHOST : ' .. wsapi_env.HTTP_HOST
+            .. '\n\tURL : ' .. wsapi_env.PATH_INFO)
+        if client_infos.handler then logger('\n\thandler : ' .. client_infos.handler .. '\n') end
     end
 
     -- Call client handler if it has one
@@ -46,6 +52,9 @@ local function run(wsapi_env)
     -- WSAPI expects a function for `body` so we make one
     if body == nil then
         body = function() return nil end
+    elseif type(body) == 'string' then
+        local body_str = body
+        body = coroutine.wrap(function() return coroutine.yield(body_str) end)
     end
     
     -- Returns the appropriate answer

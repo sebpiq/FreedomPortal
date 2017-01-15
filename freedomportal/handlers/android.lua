@@ -1,9 +1,5 @@
 local config = require('freedomportal.config')
 
-local function is_connectivity_check(wsapi_env)
-    return wsapi_env.PATH_INFO == '/generate_204'
-end
-
 local function recognizes(wsapi_env)
     return wsapi_env.HTTP_USER_AGENT and wsapi_env.HTTP_USER_AGENT:match('Android')
 end
@@ -17,10 +13,10 @@ end
 local function run_browser(client_infos, wsapi_env)
 
     -- requests testing the connectivity of the network :
-    -- * when first connecting to the network, any other HTTP response than 204 will trigger the CNA to open
-    --   and display the responded page.
+    -- * when first connecting to the network, any other HTTP response than 204 will trigger 
+    --      the CNA to open and display the responded page.
     -- * when CNA is open if HTTP 204 is sent the CNA will close
-    if is_connectivity_check(wsapi_env) then
+    if wsapi_env.PATH_INFO == '/generate_204' then
         if client_infos.status == nil then
             local location = config.get('captive_static_root_url') .. '/android/connected.html'
             return {}, 302, { Location = location }, nil

@@ -3,7 +3,8 @@ local _config = {
     captive_static_root_url = '/freedomportal_static',
     captive_dynamic_root_url = '/freedomportal',
     client_handlers = {},
-    get_connected_clients = function() return {} end
+    get_connected_clients = function() return {} end,
+    logger = function() end
 }
 
 local function set(key, value)
