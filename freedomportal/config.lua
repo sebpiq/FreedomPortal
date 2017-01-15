@@ -1,5 +1,5 @@
 local _config = {
-    redirect_success = '/',
+    redirect_success = '/freedomportal_content',
     captive_static_root_url = '/freedomportal_static',
     captive_dynamic_root_url = '/freedomportal',
     client_handlers = {},

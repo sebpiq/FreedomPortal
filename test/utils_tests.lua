@@ -1,5 +1,3 @@
-package.path = package.path .. ';../freedomportal/?.lua'
-
 local luaunit = require('luaunit')
 local utils = require('freedomportal.utils')
 

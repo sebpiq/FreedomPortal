@@ -32,8 +32,8 @@ local function run(wsapi_env)
     local client_infos_extra, status, headers, body
     if client_infos.handler then
         client_infos_extra, status, headers, body 
-            = config.get('client_handlers')[client_infos.handler].run(wsapi_env)
-        for k,v in pairs(client_infos_extra) do update_client_infos[k] = v end
+            = config.get('client_handlers')[client_infos.handler].run(client_infos, wsapi_env)
+        for k, v in pairs(client_infos_extra) do update_client_infos[k] = v end
     else 
         status = 'success'
     end
