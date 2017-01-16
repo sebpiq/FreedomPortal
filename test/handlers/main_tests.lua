@@ -8,16 +8,15 @@ Test_handlers_main = {}
 
     function Test_handlers_main:setUp()
         helpers.setUp()
+        config.set('redirect_success', '/yeah')
         
         -- Setup mockup client handlers
-        local headers = { ['Content-type'] = 'text/html' }
-
         config.set('client_handlers', {
             ['bla_handler'] = {
                 recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/bla' end,
                 run = function(client_infos, wsapi_env) 
                     return {
-                        code = 200, headers = headers, body = 'blabla',
+                        code = 200, headers = { ['Content-type'] = 'text/html' }, body = 'blabla',
                         client_infos = { some_field = wsapi_env.HTTP_SOME_FIELD }
                     }
                 end
@@ -26,9 +25,15 @@ Test_handlers_main = {}
                 recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/blo' end,
                 run = function(client_infos, wsapi_env)
                     return {
-                        code = 200, headers = headers, body = 'bloblo',
+                        code = 200, headers = { ['Content-type'] = 'text/html' }, body = 'bloblo',
                         client_infos = { some_attr = wsapi_env.HTTP_SOME_ATTR }
                     }
+                end
+            },
+            ['ble_handler'] = {
+                recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/ble' end,
+                run = function(client_infos, wsapi_env)
+                    return { code = 'PASS' }
                 end
             }
         })
@@ -73,5 +78,16 @@ Test_handlers_main = {}
             ip = '127.0.0.1',
             handler = 'bla_handler',
             some_field = '67890',
+        })
+    end
+
+
+    function Test_handlers_main:test_should_redirect_success()
+        local response = helpers.http_get('/ble', {})
+        luaunit.assertEquals(response.code, 302)
+        luaunit.assertEquals(response.headers.Location, '/yeah')
+        luaunit.assertEquals(clients.get('127.0.0.1'), {
+            ip = '127.0.0.1',
+            handler = 'ble_handler',
         })
     end
