@@ -1,9 +1,9 @@
 local utils = require('freedomportal.utils')
-local clients = require('freedomportal.clients')
+local clients = require('freedomportal.clients.init')
 local config = require('freedomportal.config')
 
 local function run(wsapi_env)
-    
+
     local ip = wsapi_env.REMOTE_ADDR
     local update_client_infos = {}
     local logger = config.get('logger')
@@ -11,7 +11,7 @@ local function run(wsapi_env)
     -- Get client infos, refreshing the clients if our client was not found
     local client_infos = clients.get(ip)
     if not client_infos then
-        local clients_table = clients.refresh(config.get('get_connected_clients'))
+        local clients_table = clients.refresh()
         client_infos = utils.search_collection(clients_table, 'ip', ip)
         if not client_infos then
             error('received request from ip ' .. ip .. ' but client could not be found')

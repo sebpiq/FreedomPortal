@@ -1,3 +1,3 @@
 package.path = package.path .. ';../../freedomportal/?.lua'
-local clients = require('freedomportal.clients')
-print(clients._read_file())
+local clients_file_storage = require('freedomportal.clients.file_storage')
+print(clients_file_storage._serialize(clients_file_storage.get_all()))

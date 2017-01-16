@@ -1,4 +1,3 @@
 package.path = package.path .. ';../../freedomportal/?.lua'
-local clients = require('freedomportal.clients')
-
-clients._replace_file(function() return 'blabla' end)
+local clients_file_storage = require('freedomportal.clients.file_storage')
+clients_file_storage.replace_all(function() return { ba = { ip = 'bi' } } end)

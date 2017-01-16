@@ -1,12 +1,10 @@
 package.path = package.path .. ';../freedomportal/?.lua'
 
+local posix = require('posix')
 local clients = require('freedomportal.clients')
 local openwrt = require('freedomportal.openwrt')
 
-local posix = require('posix')
-
-
 while true do
-    clients.refresh(openwrt.get_connected_clients)
+    clients.refresh()
     posix.sleep(1)
 end

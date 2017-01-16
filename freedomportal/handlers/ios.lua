@@ -1,5 +1,7 @@
 local config = require('freedomportal.config')
 
+local SUCCESS_PAGE = '<html><head><title>Success</title></head><body>Success</body></html>'
+
 local function is_captive_network_support(wsapi_env) 
     return wsapi_env.HTTP_USER_AGENT and wsapi_env.HTTP_USER_AGENT:match('CaptiveNetworkSupport')
 end
@@ -25,8 +27,7 @@ local function run_browser(client_infos, wsapi_env)
         if client_infos.status == nil then
             return {}, 200, {}, 'NO SUCCESS'
         else
-            local location = config.get('captive_static_root_url') .. '/ios/success.html'
-            return {}, 302, { Location = location }, nil
+            return {}, 200, { ['Content-type'] = 'text/html' }, SUCCESS_PAGE
         end
 
     -- Other requests start the connection process.
@@ -62,6 +63,7 @@ local function run_browser(client_infos, wsapi_env)
 end
 
 return {
+    SUCCESS_PAGE = SUCCESS_PAGE,
     cna = { run = run_cna, recognizes = recognizes },
     browser = { run = run_browser, recognizes = recognizes },
 }

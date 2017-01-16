@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local clients = require('freedomportal.clients')
+local clients = require('freedomportal.clients.init')
 local config = require('freedomportal.config')
 
 local clients_refreshed = false
@@ -7,10 +7,8 @@ local clients_refreshed = false
 Test_handlers_main = {}
 
     function Test_handlers_main:setUp()
-        local clients_file = io.open(clients.CLIENTS_FILE_PATH, 'w')
-        clients_file:write('')
-        clients_file:close()
-
+        helpers.setUp()
+        
         -- Setup mockup client handlers
         local headers = { ['Content-type'] = 'text/html' }
         local function respond_bla(text) coroutine.yield('blabla') end
@@ -32,6 +30,8 @@ Test_handlers_main = {}
                 end
             }
         })
+
+        config.set('clients_storage', helpers.dummy_clients_storage)
 
         config.set('get_connected_clients', function()
             clients_refreshed = true

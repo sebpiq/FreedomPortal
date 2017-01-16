@@ -1,16 +1,14 @@
 local luaunit = require('luaunit')
 local android = require('freedomportal.handlers.android')
-local clients = require('freedomportal.clients')
+local clients = require('freedomportal.clients.init')
 local config = require('freedomportal.config')
 
 Test_handlers_android = {}
 
     function Test_handlers_android:setUp()
-        local clients_file = io.open(clients.CLIENTS_FILE_PATH, 'w')
-        clients_file:write('')
-        clients_file:close()
-        
+        helpers.setUp()
         config.set('redirect_success', '/yeah')
+        config.set('clients_storage', helpers.dummy_clients_storage)
         config.set('get_connected_clients', function()
             return {
                 ['11:11:11:11:11:11'] = '127.0.0.1'
