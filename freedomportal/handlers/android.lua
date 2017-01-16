@@ -6,7 +6,7 @@ end
 
 -- Android client that opens all pages in CNA
 local function run_cna(client_infos, wsapi_env)
-    return {}, 'success', nil, nil
+    return { code = 'PASS' }
 end
 
 -- Android client only dislay a message in CNA and a button to close itself
@@ -19,22 +19,22 @@ local function run_browser(client_infos, wsapi_env)
     if wsapi_env.PATH_INFO == '/generate_204' then
         if client_infos.status == nil then
             local location = config.get('captive_static_root_url') .. '/android/connected.html'
-            return {}, 302, { Location = location }, nil
+            return { code = 302, headers = { Location = location } }
         else
-            return {}, 204, {}, nil
+            return { code = 204 }
         end
       
     -- On "connected.html", when the user clicks on the link, subsequent connectivity 
     -- checks will be answered with 204, which will close the CNA.
     elseif client_infos.status == nil then
         if wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connected' then
-            return { status = 'connected' }, 200, {}, nil
+            return { code = 200, client_infos = { status = 'connected' } }
         else -- TODO : Does this ever happen?
-            return {}, 200, {}, nil
+            return { code = 200 }
         end
 
     else 
-        return {}, 'success', nil, nil
+        return { code = 'PASS' }
     end
 end
 

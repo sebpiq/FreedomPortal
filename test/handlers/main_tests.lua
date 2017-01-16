@@ -11,22 +11,24 @@ Test_handlers_main = {}
         
         -- Setup mockup client handlers
         local headers = { ['Content-type'] = 'text/html' }
-        local function respond_bla(text) coroutine.yield('blabla') end
-        local function respond_blo(text) coroutine.yield('bloblo') end
 
         config.set('client_handlers', {
             ['bla_handler'] = {
                 recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/bla' end,
                 run = function(client_infos, wsapi_env) 
-                    return { some_field = wsapi_env.HTTP_SOME_FIELD }, 
-                        200, headers, coroutine.wrap(respond_bla) 
+                    return {
+                        code = 200, headers = headers, body = 'blabla',
+                        client_infos = { some_field = wsapi_env.HTTP_SOME_FIELD }
+                    }
                 end
             },
             ['blo_handler'] = {
                 recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/blo' end,
-                run = function(client_infos, wsapi_env) 
-                    return { some_attr = wsapi_env.HTTP_SOME_ATTR }, 
-                        200, headers, coroutine.wrap(respond_blo) 
+                run = function(client_infos, wsapi_env)
+                    return {
+                        code = 200, headers = headers, body = 'bloblo',
+                        client_infos = { some_attr = wsapi_env.HTTP_SOME_ATTR }
+                    }
                 end
             }
         })

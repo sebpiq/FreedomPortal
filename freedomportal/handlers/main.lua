@@ -35,13 +35,14 @@ local function run(wsapi_env)
 
     -- Call client handler if it has one
     -- Otherwise, just redirect to success url
-    local client_infos_extra, status, headers, body
+    local response
     if client_infos.handler then
-        client_infos_extra, status, headers, body 
-            = config.get('client_handlers')[client_infos.handler].run(client_infos, wsapi_env)
-        for k, v in pairs(client_infos_extra) do update_client_infos[k] = v end
+        response = config.get('client_handlers')[client_infos.handler].run(client_infos, wsapi_env)
+        if response.client_infos then
+            utils.extend_table(update_client_infos, response.client_infos)
+        end
     else 
-        status = 'success'
+        response = { code = 'PASS' }
     end
 
     -- If needed, we update `client_infos`
@@ -50,18 +51,21 @@ local function run(wsapi_env)
     end
 
     -- WSAPI expects a function for `body` so we make one
-    if body == nil then
-        body = function() return nil end
-    elseif type(body) == 'string' then
-        local body_str = body
-        body = coroutine.wrap(function() return coroutine.yield(body_str) end)
+    if response.body == nil then
+        response.body = function() return nil end
+    elseif type(response.body) == 'string' then
+        local body_str = response.body
+        response.body = coroutine.wrap(function() return coroutine.yield(body_str) end)
     end
+
+    -- Default headers
+    if response.headers == nil then response.headers = {} end
     
     -- Returns the appropriate answer
-    if status == 'success' then
-        return 302, { Location = config.get('redirect_success') }, body
+    if response.code == 'PASS' then
+        return 302, { Location = config.get('redirect_success') }, response.body
     else
-        return status, headers, body
+        return response.code, response.headers, response.body
     end
 end
 

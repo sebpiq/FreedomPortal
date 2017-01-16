@@ -12,9 +12,9 @@ end
 
 local function run_cna(client_infos, wsapi_env)
     if is_captive_network_support(wsapi_env) then
-        return {}, 200, {}, 'NO SUCCESS'
+        return { code = 200, body = 'NO SUCCESS' }
     else 
-        return {}, 'success', {}, nil
+        return { code = 'PASS' }
     end
 end
 
@@ -25,9 +25,9 @@ local function run_browser(client_infos, wsapi_env)
     -- * when CNA is open if "success.html" is sent the CNA will be marked as connected.
     if is_captive_network_support(wsapi_env) then
         if client_infos.status == nil then
-            return {}, 200, {}, 'NO SUCCESS'
+            return { code = 200, body = 'NO SUCCESS' }
         else
-            return {}, 200, { ['Content-type'] = 'text/html' }, SUCCESS_PAGE
+            return { code = 200, headers = { ['Content-type'] = 'text/html' }, body = SUCCESS_PAGE }
         end
 
     -- Other requests start the connection process.
@@ -39,10 +39,10 @@ local function run_browser(client_infos, wsapi_env)
     --          CaptiveNetworkSupport request.
     elseif client_infos.status == nil then
         if wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connecting' then
-            return { status = 'connecting' }, 200, {}, nil
+            return { code = 200, client_infos = { status = 'connecting' } }
         else 
             local location = config.get('captive_static_root_url') .. '/ios/connecting.html'
-            return {}, 302, { Location = location }, nil
+            return { code = 302, headers = { Location = location } }
         end
 
     -- 3. A request is sent to "/connected" we return the "connected.html" page. 
@@ -51,14 +51,14 @@ local function run_browser(client_infos, wsapi_env)
     elseif client_infos.status == 'connecting' then
         if wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connected' then
             local location = config.get('captive_static_root_url') .. '/ios/connected.html'
-            return { status = 'connected' }, 302, { Location = location }, nil
+            return { code = 302, client_infos = { status = 'connected' }, headers = { Location = location } }
         else -- TODO : Does this ever happen?
-            return {}, 'success', {}, nil
+            return { code = 'PASS' }
         end
 
     -- 4. when client is connected, we just pass all the requests without handling them
     elseif client_infos.status == 'connected' then 
-        return {}, 'success', {}, nil
+        return { code = 'PASS' }
     end
 end
 

@@ -51,9 +51,15 @@ local function search_collection(table, key, value)
     return found
 end
 
+local function extend_table(base_table, other_table)
+    for k, v in pairs(other_table) do base_table[k] = v end
+    return base_table
+end
+
 return {
     find_IPv4 = find_IPv4,
     find_MAC = find_MAC,
     bitwise_or = bitwise_or,
     search_collection = search_collection,
+    extend_table = extend_table,
 }
