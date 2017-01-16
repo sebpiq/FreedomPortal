@@ -4,44 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
-  <style type="text/css">
-    html, body {
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background-color: #333;
-      color: white;
-      font-size: 30px;
-      font-family: sans-serif;
-    }
-    #content {
-      position: absolute;
-      top: 50%;
-      -webkit-transform: translateY(-50%); 
-      -ms-transform: translateY(-50%); 
-      transform: translateY(-50%);
-      width: 100%;
-      text-align: center;
-    }
-    a.button {
-      background-color: #444;
-      color: blueviolet;
-      padding: 0.5em 1em;
-      margin-top: 1em;
-      display: inline-block;
-      text-decoration: none;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="../css/styles.css">
 </head>
 <body>
   <div id="content">Connecting ...</div>
   <script type="text/javascript">
     var req = new XMLHttpRequest()
     req.addEventListener('load', function() {
-      document.location = '/freedomportal/connected'
+      document.location = 'http://not_freedom_portal.com/freedomportal/connected'
     })
-    req.open('GET', '/freedomportal/connecting')
+    req.open('GET', 'http://not_freedom_portal.com/freedomportal/connecting')
     req.send()
   </script>
 </body>
