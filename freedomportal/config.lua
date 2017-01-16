@@ -43,7 +43,7 @@ local _config = {
     ]]
     clients_storage = '',
 
-    -- File path for clients.file_storage
+    -- File path for clients.file_storage. File must exist!
     clients_file_path = '/tmp/freedomportal_clients.txt',
 }
 
