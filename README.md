@@ -27,7 +27,11 @@ Preparing USB key
 
 Format a USB key as FAT, and call the new volume `PORTALKEY`.
 
-Copy unzipped FreedomPortal code to the USB key. Copy also your html pages in a folder called `www`. Create an empty `log` folder. 
+Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`, then copy to the USB key. 
+
+Copy also your html pages in a folder called `www`. 
+
+Create an empty `log` folder. 
 
 You USB key should now have the following structure :
 
@@ -40,26 +44,29 @@ www/
     ...
 ```
 
-Insert USB key in the router.
+Eject USB key from your computer and insert into the router.
 
 
 Initialize router password, connect through SSH
 ------------------------------------------------
 
-On first connection on GL-inet routers, go to the router's web interface [192.168.8.1](http://192.168.8.1) to set a password which will be used to connect through SSH.
+On first connection on GL-inet routers, go to the router's web interface [192.168.8.1](http://192.168.8.1) to set a password.
 
-Use that password to connect through SSH `ssh root@192.168.8.1`. All the following commands will be ran inside the SSH console.
+Use that password to connect through SSH. Open your terminal and run the following command :
+
+```
+ssh root@192.168.8.1
+```
+
+After successfully connecting, an SSH console will be open. All the following commands will be ran inside that SSH console.
 
 
 Cleaning unused packages 
 ----------------------------
 
-For this step, the router needs Internet access. You can for example connect its `wan` port to one free `lan` port on your home router.
-
-First, let's stop the default router's web server, and disable it so it won't be started at next boot. Run :
+First, let's disable the default router's web server so it won't be started at next boot. Run :
 
 ```
-/etc/init.d/uhttpd stop
 /etc/init.d/uhttpd disable
 ```
 
@@ -70,6 +77,7 @@ NB: the first and second commands might need to run twice, because packages we a
 ```
 opkg remove gl-inet luci luci-base luci-*
 opkg remove gl-inet luci luci-base luci-*
+opkg remove uhttpd-* uhttpd
 opkg remove kmod-video*
 opkg remove kmod-video*
 opkg remove mjpg-streamer
@@ -79,6 +87,8 @@ rm -rf /www/*
 
 Installing requirements
 --------------------------
+
+For this step, the router needs Internet access. You can for example connect its `wan` port to one free `lan` port on your home router.
 
 Copy FreedomPortal code from the USB stick and onto the router :
 
@@ -95,24 +105,7 @@ opkg update
 Then install the required packages with the following command : 
 
 ```
-opkg install lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lua-coxpcall lua-wsapi-base luaposix
-```
-
-Configure lighttpd
---------------------
-
-Normally, lighttpd is already enabled on start, so we only need to modify the configuration file.
-
-Let's first backup the default configuration file :
-
-```
-mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.bak
-```
-
-and install our own config file :
-
-```
-cp FreedomPortal/scripts/lighttpd.conf /etc/lighttpd/
+opkg install lighttpd lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lighttpd-mod-cgi lua lua-coxpcall lua-wsapi-base luaposix
 ```
 
 
