@@ -12,7 +12,7 @@ local function get(ip)
 end
 
 -- Refreshes the file of connected clients in an atomic way.
-local function refresh(get_connected_clients)
+local function refresh()
     local clients_table
     config.get('clients_storage').replace_all(function(a_clients_table)
         clients_table = a_clients_table

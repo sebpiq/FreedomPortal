@@ -3,18 +3,15 @@ FreedomPortal
 
 The FreedomPortal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
 
-These instructions explain how to :
-
-- create a FreedomPortal app
-- deploy that app on a Wi-Fi router, so that it act as a captive portal for all clients connecting
+These instructions explain how to deploy some static web pages on a Wi-Fi router, so that it act as a captive portal for all clients connecting.
 
 In order to use these instructions, You need a Wi-Fi router:
 
-- able to support openWRT (https://openwrt.org/)
+- able to support OpenWrt (https://openwrt.org/)
 - with a USB port so you can plug a USB key to extend the router's disk space
-- with enough flash memory (I am unsure of the exact amount of memory necessary, but probably 8Mb or more)
+- with enough flash memory (I am unsure of the exact amount of memory necessary)
 
-We have been using GL-inet routers, which have all of the above, and come with openWRT pre-installed. Following instructions are for these specific routers, but can be easily adapted to another model.
+We have been using GL-inet routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model.
 
 
 Creating a FreedomPortal app
@@ -24,13 +21,26 @@ Creating a FreedomPortal app
 Deploying on a Wi-Fi router
 ==============================
 
-Format USB KEY to PORTALKEY
 
+Preparing USB key
+--------------------
 
-Copying files onto the router
-------------------------------
+Format a USB key as FAT, and call the new volume `PORTALKEY`.
 
-Copy unzipped FreedomPortal code to a USB key. Copy also your html pages. Insert USB key in the router.
+Copy unzipped FreedomPortal code to the USB key. Copy also your html pages in a folder called `www`. Create an empty `log` folder. 
+
+You USB key should now have the following structure :
+
+```
+FreedomPortal/
+log/
+www/
+    index.html
+    css/
+    ...
+```
+
+Insert USB key in the router.
 
 
 Initialize router password, connect through SSH
@@ -38,34 +48,22 @@ Initialize router password, connect through SSH
 
 On first connection on GL-inet routers, go to the router's web interface [192.168.8.1](http://192.168.8.1) to set a password which will be used to connect through SSH.
 
-Use that password to connect through SSH `ssh root@192.168.8.1` .
+Use that password to connect through SSH `ssh root@192.168.8.1`. All the following commands will be ran inside the SSH console.
 
 
-Deactivate router's web server
---------------------------------
+Cleaning unused packages 
+----------------------------
 
-We need to stop the default router's web server, and disable it so it won't be started at next boot.
+For this step, the router needs Internet access. You can for example connect its `wan` port to one free `lan` port on your home router.
+
+First, let's stop the default router's web server, and disable it so it won't be started at next boot. Run :
 
 ```
 /etc/init.d/uhttpd stop
 /etc/init.d/uhttpd disable
 ```
 
-Copy FreedomPortal code on router
-------------------------------------
-
-```
-cp -r /mnt/PORTALKEY/FreedomPortal/ .
-```
-
-mkdir /var/log/freedomportal
-
-Install / remove packages 
-----------------------------
-
-For this step, the router needs Internet access.
-
-To make some space, we will remove some unused packages. Run the following :
+To make some space, let's remove some unused packages. Run the following :
 
 NB: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other. 
 
@@ -76,6 +74,16 @@ opkg remove kmod-video*
 opkg remove kmod-video*
 opkg remove mjpg-streamer
 rm -rf /www/*
+```
+
+
+Installing requirements
+--------------------------
+
+Copy FreedomPortal code from the USB stick and onto the router :
+
+```
+cp -r /mnt/PORTALKEY/FreedomPortal/ .
 ```
 
 Then to install the packages we need, first update repo with :
@@ -108,10 +116,10 @@ cp FreedomPortal/scripts/lighttpd.conf /etc/lighttpd/
 ```
 
 
-Start the client refresh daemon on boot
-----------------------------------------
+Initialize and start FreedomPortal on boot
+-------------------------------------------
 
-Copy the script for starting the daemon on startup : 
+Copy the script for the startup script in `/etc/init.d` folder : 
 
 ```
 cp FreedomPortal/scripts/freedomportal.init.d /etc/init.d/freedomportal

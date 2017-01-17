@@ -54,3 +54,31 @@ Test_utils = {}
         })
         luaunit.assertEquals(utils.search_collection(table, 'b', 'bly'), nil)        
     end
+
+    function Test_utils:test_have_same_keys()
+        luaunit.assertTrue(utils.have_same_keys({
+            a = 1, b = 2, c = 3
+        }, {
+            b = 1, c = 2, a = 3
+        }))
+
+        luaunit.assertTrue(utils.have_same_keys({
+            a = 1
+        }, {
+            a = 2
+        }))
+
+        luaunit.assertTrue(utils.have_same_keys({}, {}))
+
+        luaunit.assertFalse(utils.have_same_keys({
+            a = 1, b = 2
+        }, {
+            b = 1, c = 2, a = 3
+        }))
+
+        luaunit.assertFalse(utils.have_same_keys({
+            a = 1, b = 2, c = 3
+        }, {
+            b = 1, c = 2
+        }))
+    end

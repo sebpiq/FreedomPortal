@@ -56,10 +56,21 @@ local function extend_table(base_table, other_table)
     return base_table
 end
 
+local function have_same_keys(table1, table2)
+    for k, v in pairs(table1) do 
+        if not table2[k] then return false end
+    end
+    for k, v in pairs(table2) do 
+        if not table1[k] then return false end
+    end
+    return true
+end
+
 return {
     find_IPv4 = find_IPv4,
     find_MAC = find_MAC,
     bitwise_or = bitwise_or,
     search_collection = search_collection,
     extend_table = extend_table,
+    have_same_keys = have_same_keys,
 }
