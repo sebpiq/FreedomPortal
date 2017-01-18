@@ -14,10 +14,6 @@ In order to use these instructions, You need a Wi-Fi router:
 We have been using GL-inet routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model.
 
 
-Creating a FreedomPortal app
-==============================
-
-
 Deploying on a Wi-Fi router
 ==============================
 
