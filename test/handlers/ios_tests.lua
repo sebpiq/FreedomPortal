@@ -46,7 +46,7 @@ Test_handlers_ios = {}
         config.set('captive_static_root_url', '/static')
         config.set('captive_dynamic_root_url', '/freedomportal')
 
-        -- Should answer NO SUCCESS to trigger CNA to open if CaptiveNetworkSupport request
+        -- (1) Should answer NO SUCCESS to trigger CNA to open if CaptiveNetworkSupport request
         response = helpers.http_get('/bla', { 
             HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
         })
@@ -57,7 +57,7 @@ Test_handlers_ios = {}
             handler = 'ios'
         })
 
-        -- Should redirect to connecting page if other request
+        -- (2) Should redirect to connecting page if other request
         response = helpers.http_get('/bla', {})
         luaunit.assertEquals(response.code, 302)
         luaunit.assertEquals(response.headers['Location'], '/static/ios/connecting.html')
@@ -66,17 +66,32 @@ Test_handlers_ios = {}
             handler = 'ios'
         })
 
-        -- connecting.html page shouldmark client status as connecting
+        -- (3) connecting.html page should mark client status as connecting
         response = helpers.http_get('/freedomportal/connecting', {})
-        luaunit.assertEquals(response.code, 200)
+        luaunit.assertEquals(response.code, 302)
+        luaunit.assertEquals(response.headers['Location'], '/static/ios/connecting.html')
         luaunit.assertEquals(clients.get('127.0.0.1'), {
             ip = '127.0.0.1',
             handler = 'ios',
             status = 'connecting'
         })
 
-        -- and then redirect to /freedomportal/connected which will mark client status as connected
-        response = helpers.http_get('/freedomportal/connected', {})
+        -- (4) At this stage CaptiveNetworkSupport request should be answered with SUCCESS,
+        -- and mark client as connected
+        response = helpers.http_get('/bla', { 
+            HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
+        })
+        luaunit.assertEquals(response.code, 200)
+        luaunit.assertEquals(response.headers['Content-type'], 'text/html')
+        luaunit.assertEquals(response.body, ios.SUCCESS_PAGE)
+        luaunit.assertEquals(clients.get('127.0.0.1'), {
+            ip = '127.0.0.1',
+            handler = 'ios',
+            status = 'connected'
+        })
+
+        -- (5) next request to /connecting will redirect to connected.html page
+        response = helpers.http_get('/freedomportal/connecting', {})
         luaunit.assertEquals(response.code, 302)
         luaunit.assertEquals(response.headers['Location'], '/static/ios/connected.html')
         luaunit.assertEquals(clients.get('127.0.0.1'), {
@@ -84,14 +99,6 @@ Test_handlers_ios = {}
             handler = 'ios',
             status = 'connected'
         })
-
-        -- At this stage CaptiveNetworkSupport request should be answered with SUCCESS
-        response = helpers.http_get('/bla', { 
-            HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
-        })
-        luaunit.assertEquals(response.code, 200)
-        luaunit.assertEquals(response.headers['Content-type'], 'text/html')
-        luaunit.assertEquals(response.body, ios.SUCCESS_PAGE)
 
         -- And finally requests will be answered with the success page
         response = helpers.http_get('/bla', {})

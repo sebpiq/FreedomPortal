@@ -1,5 +1,10 @@
 local config = require('freedomportal.config')
 
+-- CaptiveNetworkSupport requests test the connectivity of the network :
+--      * when first connecting to the network, any other response than SUCCESS_PAGE 
+--          will trigger the CNA to open.
+--      * when CNA is open if SUCCESS_PAGE is sent the CNA will be marked as connected.
+--
 local SUCCESS_PAGE = '<html><head><title>Success</title></head><body>Success</body></html>'
 
 local function is_captive_network_support(wsapi_env) 
@@ -18,47 +23,58 @@ local function run_cna(client_infos, wsapi_env)
     end
 end
 
+-- This hanler implements the following connection process : 
+--      (1) First CaptiveNetworkSupport request triggers the CNA to open
+--      (2) CNA is redirected to "connecting.html"
+--      (3) "connecting.html" will refresh, hitting "/connecting" which will update
+--          the client status to "connecting"
+--      (4) Because of the refreshes, the CNA will send more CaptiveNetworkSupport requests, 
+--          which will be answered with SUCCESS_PAGE, causing the CNA to be marked as connected.
+--          At the same time, client status is updated to "connected"
+--      (5) Next time "/connecting" is hit, it will redirect to "connected.html"
+--      (6) The CNA being now marked as connected, any link to an external web page on the 
+--          "connected.html" page will open in a browser window.
+--
 local function run_browser(client_infos, wsapi_env)
-    -- requests testing the connectivity of the network :
-    -- * when first connecting to the network, any other page than "success.html" will trigger 
-    --      the CNA to open.
-    -- * when CNA is open if "success.html" is sent the CNA will be marked as connected.
+
     if is_captive_network_support(wsapi_env) then
-        if client_infos.status == nil then
+        if client_infos.status == nil then -- (1)
             return { code = 200, body = 'NO SUCCESS' }
-        else
-            return { code = 200, headers = { ['Content-type'] = 'text/html' }, body = SUCCESS_PAGE }
+        else -- (4)
+            local updated_client_infos = nil
+            if client_infos.status ~= 'connected' then
+                updated_client_infos = { status = 'connected' }
+            end
+            return { 
+                code = 200, headers = { ['Content-type'] = 'text/html' }, 
+                body = SUCCESS_PAGE, client_infos = updated_client_infos 
+            }
         end
 
-    -- Other requests start the connection process.
-    -- 1. we first return the "connecting.html" page
-    -- 2. "connecting.html" sends a request to "/connecting", which will
-    --      * change status from "nil" to "connecting" and cause next CaptiveNetworkSupport
-    --          request to be answered with "success.html" page.
-    --      * navigate to "/connected" which will also cause iOS to send a new 
-    --          CaptiveNetworkSupport request.
-    elseif client_infos.status == nil then
-        if wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connecting' then
-            return { code = 200, client_infos = { status = 'connecting' } }
-        else 
+    elseif wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connecting' then
+        local updated_client_infos = nil
+        local location = nil
+
+        if client_infos.status == nil or client_infos.status == 'connecting' then -- (3)
+            location = config.get('captive_static_root_url') .. '/ios/connecting.html'
+            if client_infos.status == nil then
+                updated_client_infos = { status = 'connecting' }
+            end
+        elseif client_infos.status == 'connected' then -- (5)
+            location = config.get('captive_static_root_url') .. '/ios/connected.html'
+        else
+            error('wrong client status ' .. client_infos.status)
+        end
+
+        return { code = 302, headers = { Location = location }, client_infos = updated_client_infos }
+
+    else 
+        if client_infos.status == 'connected' then 
+            return { code = 'PASS' }
+        else -- (2)
             local location = config.get('captive_static_root_url') .. '/ios/connecting.html'
             return { code = 302, headers = { Location = location } }
         end
-
-    -- 3. A request is sent to "/connected" we return the "connected.html" page. 
-    --      At this stage the iOS CNA should think that the connection is done.
-    --      The page displays a link which allows to redirect the user to a full browser.
-    elseif client_infos.status == 'connecting' then
-        if wsapi_env.PATH_INFO == config.get('captive_dynamic_root_url') .. '/connected' then
-            local location = config.get('captive_static_root_url') .. '/ios/connected.html'
-            return { code = 302, client_infos = { status = 'connected' }, headers = { Location = location } }
-        else -- TODO : Does this ever happen?
-            return { code = 'PASS' }
-        end
-
-    -- 4. when client is connected, we just pass all the requests without handling them
-    elseif client_infos.status == 'connected' then 
-        return { code = 'PASS' }
     end
 end
 
