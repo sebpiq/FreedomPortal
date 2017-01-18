@@ -1,12 +1,17 @@
 local utils = require('freedomportal.utils')
 local config = require('freedomportal.config')
 
--- Returns the client table of all currently connected clients
+-- Returns the client table of all currently connected clients.
+-- Format of table is :
+--      {
+--          <mac1> = { ip = <ip1>, <key1> = <val1>, ... }
+--          <mac2> = { ip = <ip2>, <key2> = <val2>, ... }
+--      }
 local function get_all()
     return config.get('clients_storage').get_all()
 end
 
--- Returns the infos for client `ip`
+-- Returns the infos of client `ip`
 local function get(ip)
     return utils.search_collection(get_all(), 'ip', ip) 
 end

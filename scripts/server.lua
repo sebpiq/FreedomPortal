@@ -1,3 +1,4 @@
+-- This is the wsapi script for our captive portal.
 package.path = package.path .. ';/root/FreedomPortal/?.lua'
 
 local main = require('freedomportal.handlers.main')

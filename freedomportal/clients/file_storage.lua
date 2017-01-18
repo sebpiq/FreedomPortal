@@ -4,7 +4,7 @@ local config = require('freedomportal.config')
 
 -- Acquire the lock to safely read / write in the clients file
 local function _acquire_file_lock(open_mode, lock_mode)
-    local fd = posix.open(config.get('clients_file_path'), open_mode) -- | posix.O_SYNC
+    local fd = posix.open(config.get('clients_file_path'), open_mode)
 
     -- Set lock on file
     local lock = {
@@ -34,6 +34,7 @@ local function _release_file_lock(fd)
     posix.fcntl(fd, posix.F_SETLK, lock)
 end
 
+-- Helper function to read all contents of a file.
 local function _posix_read_all(fd)
     local contents = ''
     local string_read = nil
@@ -44,6 +45,10 @@ local function _posix_read_all(fd)
     return contents
 end
 
+-- Serializes `clients_table` to a string that can be stored in a file.
+-- Format is as follow :
+--     mac <MAC1> <key1> <val1> <key2> <val2> ...
+--     mac <MAC2> <key1> <val1> <key2> <val2> ...
 local function _serialize(clients_table)
     local clients_serialized = ''
     for mac, infos_table in pairs(clients_table) do
@@ -56,6 +61,7 @@ local function _serialize(clients_table)
     return clients_serialized
 end
 
+-- Deserializes `clients_serialized` to a table.
 local function _deserialize(clients_serialized)
     local clients_table = {}
 
@@ -64,13 +70,16 @@ local function _deserialize(clients_serialized)
         for key, value in string.gmatch(line, '(%S+)%s(%S+)%s') do
             infos_table[key] = value
         end
-        if not infos_table.mac or not infos_table.ip then error('invalid client infos : ' .. line) end
+        if not infos_table.mac or not infos_table.ip then 
+            error('invalid client infos : ' .. line) 
+        end
         clients_table[infos_table.mac] = infos_table
         infos_table.mac = nil
     end
     return clients_table
 end
 
+-- Returns all the stored clients.
 local function get_all()
     local fd = _acquire_file_lock(posix.O_RDONLY, posix.F_RDLCK)
     local contents = _posix_read_all(fd)
@@ -78,6 +87,8 @@ local function get_all()
     return _deserialize(contents)
 end
 
+-- Replaces all the stored clients. `get_clients` receives the table of 
+-- previously stored clients, and returns the new clients table.
 local function replace_all(get_clients)
     local flags = utils.bitwise_or(posix.O_RDWR, posix.O_SYNC)
     local fd = _acquire_file_lock(flags, posix.F_WRLCK)

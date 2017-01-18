@@ -1,3 +1,4 @@
+-- This script periodically refreshes the clients in openwrt.
 package.path = package.path .. ';/root/FreedomPortal/?.lua'
 
 local posix = require('posix')

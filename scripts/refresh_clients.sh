@@ -1,4 +1,6 @@
 #!/bin/sh
+# This script starts the lua script refreshing clients in openwrt,
+# and restarts it if it crashed.
 
 while true
 do
