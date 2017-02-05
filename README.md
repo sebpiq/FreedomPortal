@@ -3,7 +3,7 @@ FreedomPortal
 
 The FreedomPortal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
 
-These instructions explain how to deploy some static web pages on a Wi-Fi router, so that it act as a captive portal for all clients connecting.
+These instructions explain how to deploy some static web pages on a Wi-Fi router, so that it acts as a captive portal for all clients connecting.
 
 In order to use these instructions, You need a Wi-Fi router:
 
@@ -11,7 +11,9 @@ In order to use these instructions, You need a Wi-Fi router:
 - with a USB port so you can plug a USB key to extend the router's disk space
 - with enough flash memory (I am unsure of the exact amount of memory necessary)
 
-We have been using GL-inet routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model.
+We have been using `GL-AR150` routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model or another brand.
+
+**NB**: this is a fairly new project, so expect a few bugs and a few issues in the deployment process. Feedback, bug reports are welcome, open a ticket in the [issue tracker](https://github.com/sebpiq/FreedomPortal/issues).
 
 
 Deploying on a Wi-Fi router
@@ -56,7 +58,7 @@ ssh root@192.168.8.1
 
 After successfully connecting, an SSH console will be open. All the following commands will be ran inside that SSH console.
 
-**Attention**: the instructions and configuration files are designed for GL-inet firmware version **2.25** and above. If you have an older firmware version you should upgrade it using the router's web interface, **firmware** menu. You will need an Internet connection for that.
+**ATTENTION**: the instructions and configuration files are designed for GL-inet firmware version **2.25** and above. If you have an older firmware version you should upgrade it using the router's web interface, **firmware** menu. You will need an Internet connection for that.
 
 Cleaning unused packages 
 ----------------------------
