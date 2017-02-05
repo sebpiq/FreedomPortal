@@ -56,6 +56,7 @@ ssh root@192.168.8.1
 
 After successfully connecting, an SSH console will be open. All the following commands will be ran inside that SSH console.
 
+**Attention**: the instructions and configuration files are designed for GL-inet firmware version **2.25** and above. If you have an older firmware version you should upgrade it using the router's web interface, **firmware** menu. You will need an Internet connection for that.
 
 Cleaning unused packages 
 ----------------------------
@@ -68,7 +69,7 @@ First, let's disable the default router's web server so it won't be started at n
 
 To make some space, let's remove some unused packages. Run the following :
 
-NB: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other. 
+**NB**: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other. 
 
 ```
 opkg remove gl-inet luci luci-base luci-*
