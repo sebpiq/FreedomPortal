@@ -25,11 +25,11 @@ Preparing USB key
 
 Format a USB key as FAT, and call the new volume `PORTALKEY`.
 
-Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`, then copy to the USB key. 
+Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`, then copy to the USB key.
 
-Copy also your html pages in a folder called `www`. 
+Copy also your html pages in a folder called `www`.
 
-Create an empty `log` folder. 
+Create an empty `log` folder.
 
 You USB key should now have the following structure :
 
@@ -60,7 +60,7 @@ After successfully connecting, an SSH console will be open. All the following co
 
 **ATTENTION**: the instructions and configuration files are designed for GL-inet firmware version **2.25** and above. If you have an older firmware version you should upgrade it using the router's web interface, **firmware** menu. You will need an Internet connection for that.
 
-Cleaning unused packages 
+Cleaning unused packages
 ----------------------------
 
 First, let's disable the default router's web server so it won't be started at next boot. Run :
@@ -71,7 +71,7 @@ First, let's disable the default router's web server so it won't be started at n
 
 To make some space, let's remove some unused packages. Run the following :
 
-**NB**: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other. 
+**NB**: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other.
 
 ```
 opkg remove gl-inet luci luci-base luci-*
@@ -101,30 +101,32 @@ Then to install the packages we need, first update repo with :
 opkg update
 ```
 
-Then install the required packages with the following command : 
+Then install the required packages with the following command :
 
 ```
 opkg install lighttpd lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lighttpd-mod-cgi lua lua-coxpcall lua-wsapi-base luaposix
 ```
 
+**NOTE** : coxpcall is a dependency of `wsapi`, but shouldn't be needed in lua 5.2 anymore.
+
 
 Initialize and start FreedomPortal on boot
 -------------------------------------------
 
-Copy the script for the startup script in `/etc/init.d` folder : 
+Copy the script for the startup script in `/etc/init.d` folder :
 
 ```
 cp FreedomPortal/scripts/freedomportal.init.d /etc/init.d/freedomportal
 ```
 
-make scripts executable : 
+make scripts executable :
 
 ```
 chmod +x FreedomPortal/scripts/refresh_clients.sh
 chmod +x /etc/init.d/freedomportal
 ```
 
-Activate at next boot by running 
+Activate at next boot by running
 
 ```
 /etc/init.d/freedomportal enable
@@ -169,7 +171,7 @@ in `/etc/config/wireless` change the encryption option to `none` and change the 
 Reboot
 -------
 
-The setup is now complete! You can reboot the router by running 
+The setup is now complete! You can reboot the router by running
 
 ```
 reboot 0
@@ -198,6 +200,11 @@ HTML page basics
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>192.168.0.1:Where the WiFi comes from</title>
 ```
+
+Running tests
+===============
+
+Install `luaunit`, and then run `lua run_tests.lua`
 
 Credits
 ==========
