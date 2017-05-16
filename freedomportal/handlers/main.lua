@@ -27,7 +27,7 @@ local function run(wsapi_env)
                 break
             end
         end
-        logger(ip .. '\n\tUser-Agent : ' .. wsapi_env.HTTP_USER_AGENT 
+        logger(ip .. '\n\tUser-Agent : ' .. wsapi_env.HTTP_USER_AGENT
             .. '\n\tHOST : ' .. wsapi_env.HTTP_HOST
             .. '\n\tURL : ' .. wsapi_env.PATH_INFO)
         if client_infos.handler then logger('\n\thandler : ' .. client_infos.handler .. '\n') end
@@ -41,7 +41,7 @@ local function run(wsapi_env)
         if response.client_infos then
             utils.extend_table(update_client_infos, response.client_infos)
         end
-    else 
+    else
         response = { code = 'PASS' }
     end
 
@@ -60,10 +60,10 @@ local function run(wsapi_env)
 
     -- Default headers
     if response.headers == nil then response.headers = {} end
-    
+
     -- Returns the appropriate answer
     if response.code == 'PASS' then
-        return 302, { Location = config.get('redirect_success') }, response.body
+        return 302, { Location = 'http://' .. config.get('www_host') }, response.body
     else
         return response.code, response.headers, response.body
     end

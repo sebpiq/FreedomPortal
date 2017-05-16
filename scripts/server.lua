@@ -10,7 +10,7 @@ local config = require('freedomportal.config')
 
 config.set('get_connected_clients', openwrt.get_connected_clients)
 config.set('clients_storage', clients_file_storage)
-config.set('redirect_success', 'http://freedomportal.com/index.html')
+config.set('www_host', 'freedomportal.com')
 config.set('captive_static_root_url', 'http://freedomportal.com/_freedomportal')
 config.set('client_handlers', { android = android.cna, ios = ios.cna })
 config.set('logger', function(msg)

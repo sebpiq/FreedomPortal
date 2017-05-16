@@ -7,8 +7,8 @@ Test_handlers_ios = {}
 
     function Test_handlers_ios:setUp()
         helpers.setUp()
-        
-        config.set('redirect_success', '/yeah')
+
+        config.set('www_host', 'yeah.com')
         config.set('clients_storage', helpers.dummy_clients_storage)
         config.set('get_connected_clients', function()
             return {
@@ -21,7 +21,7 @@ Test_handlers_ios = {}
         config.set('client_handlers', { ios = ios.cna })
 
         -- Should answer NO SUCCESS to trigger CNA to open if CaptiveNetworkSupport request
-        response = helpers.http_get('/bla', { 
+        response = helpers.http_get('/bla', {
             HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
         })
         luaunit.assertEquals(response.code, 200)
@@ -34,7 +34,7 @@ Test_handlers_ios = {}
         -- Should redirect to success page if other request
         response = helpers.http_get('/bla', {})
         luaunit.assertEquals(response.code, 302)
-        luaunit.assertEquals(response.headers['Location'], '/yeah')
+        luaunit.assertEquals(response.headers['Location'], 'http://yeah.com')
         luaunit.assertEquals(clients.get('127.0.0.1'), {
             ip = '127.0.0.1',
             handler = 'ios'
@@ -47,7 +47,7 @@ Test_handlers_ios = {}
         config.set('captive_dynamic_root_url', '/freedomportal')
 
         -- (1) Should answer NO SUCCESS to trigger CNA to open if CaptiveNetworkSupport request
-        response = helpers.http_get('/bla', { 
+        response = helpers.http_get('/bla', {
             HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
         })
         luaunit.assertEquals(response.code, 200)
@@ -78,7 +78,7 @@ Test_handlers_ios = {}
 
         -- (4) At this stage CaptiveNetworkSupport request should be answered with SUCCESS,
         -- and mark client as connected
-        response = helpers.http_get('/bla', { 
+        response = helpers.http_get('/bla', {
             HTTP_USER_AGENT = 'CaptiveNetworkSupport/1.0 wispr'
         })
         luaunit.assertEquals(response.code, 200)
@@ -103,5 +103,5 @@ Test_handlers_ios = {}
         -- And finally requests will be answered with the success page
         response = helpers.http_get('/bla', {})
         luaunit.assertEquals(response.code, 302)
-        luaunit.assertEquals(response.headers['Location'], '/yeah')
+        luaunit.assertEquals(response.headers['Location'], 'http://yeah.com')
     end

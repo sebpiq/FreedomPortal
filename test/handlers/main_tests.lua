@@ -8,13 +8,13 @@ Test_handlers_main = {}
 
     function Test_handlers_main:setUp()
         helpers.setUp()
-        config.set('redirect_success', '/yeah')
-        
+        config.set('www_host', 'yeah.com')
+
         -- Setup mockup client handlers
         config.set('client_handlers', {
             ['bla_handler'] = {
                 recognizes = function(wsapi_env) return wsapi_env.PATH_INFO == '/bla' end,
-                run = function(client_infos, wsapi_env) 
+                run = function(client_infos, wsapi_env)
                     return {
                         code = 200, headers = { ['Content-type'] = 'text/html' }, body = 'blabla',
                         client_infos = { some_field = wsapi_env.HTTP_SOME_FIELD }
@@ -82,10 +82,10 @@ Test_handlers_main = {}
     end
 
 
-    function Test_handlers_main:test_should_redirect_success()
+    function Test_handlers_main:test_should_redirect_www_host()
         local response = helpers.http_get('/ble', {})
         luaunit.assertEquals(response.code, 302)
-        luaunit.assertEquals(response.headers.Location, '/yeah')
+        luaunit.assertEquals(response.headers.Location, 'http://yeah.com')
         luaunit.assertEquals(clients.get('127.0.0.1'), {
             ip = '127.0.0.1',
             handler = 'ble_handler',
