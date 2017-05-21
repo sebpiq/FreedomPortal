@@ -1,8 +1,8 @@
 local block_size = 1024
 
 local function handler(opts, wsapi_env)
-    if wsapi_env.METHOD ~= 'POST' then
-        return 405, { Allow = 'POST' }
+    if wsapi_env.REQUEST_METHOD ~= 'POST' then
+        return 405, { Allow = 'POST' }, function() return nil end
     end
 
     -- Stream file to disk
