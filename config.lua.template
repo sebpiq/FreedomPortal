@@ -1,0 +1,27 @@
+return {
+
+    -- Host on which lighttpd will serve custom web pages
+    www_host = 'freedomportal.com',
+
+    -- Root url on which scripts are served
+    scripts_root_url = '/_scripts',
+
+    -- Path where the configured files are saved
+    configured_dir = '/tmp/configured',
+
+    -- Root path for the custom web pages served on the static portal
+    www_dir = '/path/to/your/pages',
+
+    -- Root path for all log files
+    log_dir = '/var/log/lighttpd',
+
+    -- Root path for freedomportal lua src
+    FreedomPortal_dir = '/path/to/FreedomPortal',
+
+    -- Root path for uploaded files
+    upload_dir = '/tmp/uploaded',
+
+    -- Root path for that can be listed with ls script
+    ls_dir = '/tmp/uploaded'
+
+}
