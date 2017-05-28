@@ -29,3 +29,11 @@ Test_upload = {}
         local uploaded_content = io.open('/tmp/upload-test-lua.txt', 'r'):read('*all')
         luaunit.assertEquals(content_to_upload, uploaded_content)
     end
+
+    function Test_upload:test_unallowed_method()
+        local response, request = app:get('/')
+        _log_errors(response)
+
+        luaunit.assertEquals(response.code, 405)
+        luaunit.assertEquals(response.headers['Allow'], 'POST')
+    end
