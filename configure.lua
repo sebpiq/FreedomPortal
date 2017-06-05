@@ -42,6 +42,7 @@ local context = {
 
 render_template(context, 'freedomportal/freedomportal.init.d', config.configured_dir .. '/freedomportal.init.d')
 render_template(context, 'freedomportal/lighttpd.conf', config.configured_dir .. '/lighttpd.conf')
+render_template(context, 'freedomportal/install.sh', config.configured_dir .. '/install.sh')
 render_template(context, 'freedomportal/pages/redirection.html', config.configured_dir .. '/pages/redirection.html')
 render_template(context, 'freedomportal/scripts/upload.lua', config.configured_dir .. '/scripts/upload.lua')
 render_template(context, 'freedomportal/scripts/ls.lua', config.configured_dir .. '/scripts/ls.lua')

@@ -19,23 +19,35 @@ We have been using `GL-AR150` routers, which have all of the above, and come wit
 Deploying on a Wi-Fi router
 ==============================
 
+**NB**: In order to install dependencies, the router will need Internet access. You can for example connect its wan port to one free lan port on your home router.
+
+
+Getting the code and creating a configuration file
+------------------------------------------------------
+
+Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`.
+
+Copy the file `config.lua.template`, name the copy `config.lua`.
+
+You can optionally edit `config.lua` to customize your installation, but I recommend you try out the default settings first.
+
 
 Preparing USB key
 --------------------
 
 Format a USB key as FAT, and call the new volume `PORTALKEY`.
 
-Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`, then copy to the USB key.
+Copy the `FreedomPortal` folder you downloaded before to the USB key.
 
-Copy also your html pages in a folder called `www`.
-
-Create an empty `log` folder.
+Copy also your html pages in a folder called `www`. If you don't have html pages yet and just want to test out the system, you can copy the contents of `example/` under `www/` on your USB key.
 
 You USB key should now have the following structure :
 
 ```
 FreedomPortal/
-log/
+    config.lua
+    src/
+    ...
 www/
     index.html
     css/
@@ -60,122 +72,37 @@ After successfully connecting, an SSH console will be open. All the following co
 
 **ATTENTION**: the instructions and configuration files are designed for GL-inet firmware version **2.25** and above. If you have an older firmware version you should upgrade it using the router's web interface, **firmware** menu. You will need an Internet connection for that.
 
-Cleaning unused packages
-----------------------------
 
-First, let's disable the default router's web server so it won't be started at next boot. Run :
+Install FreedomPortal on the router
+-------------------------------------
 
-```
-/etc/init.d/uhttpd disable
-```
-
-To make some space, let's remove some unused packages. Run the following :
-
-**NB**: the first and second commands might need to run twice, because packages we are trying to remove depend upon each other.
+You are now ready to run the installation process. Navigate to the `FreedomPortal/` folder on your USB key by running the command :
 
 ```
-opkg remove gl-inet luci luci-base luci-*
-opkg remove gl-inet luci luci-base luci-*
-opkg remove uhttpd-* uhttpd
-opkg remove kmod-video*
-opkg remove kmod-video*
-opkg remove mjpg-streamer
-rm -rf /www/*
+cd /mnt/PORTALKEY/FreedomPortal
 ```
 
-
-Installing requirements
---------------------------
-
-For this step, the router needs Internet access. You can for example connect its `wan` port to one free `lan` port on your home router.
-
-Copy FreedomPortal code from the USB stick and onto the router :
+Once inside the folder, run the following command :
 
 ```
-cp -r /mnt/PORTALKEY/FreedomPortal/ .
+lua configure.lua config
 ```
 
-Then to install the packages we need, first update repo with :
+Then, finalize the installation by running :
 
 ```
-opkg update
+chmod a+x /root/FreedomPortal_configured/install.sh
+/root/FreedomPortal_configured/install.sh
 ```
 
-Then install the required packages with the following command :
-
-```
-opkg install lighttpd lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lighttpd-mod-cgi lua lua-coxpcall lua-wsapi-base luaposix
-```
-
-**NOTE** : coxpcall is a dependency of `wsapi`, but shouldn't be needed in lua 5.2 anymore.
-
-
-Initialize and start FreedomPortal on boot
--------------------------------------------
-
-Copy the script for the startup script in `/etc/init.d` folder :
-
-```
-cp FreedomPortal/scripts/freedomportal.init.d /etc/init.d/freedomportal
-```
-
-make scripts executable :
-
-```
-chmod +x FreedomPortal/scripts/refresh_clients.sh
-chmod +x /etc/init.d/freedomportal
-```
-
-Activate at next boot by running
-
-```
-/etc/init.d/freedomportal enable
-```
-
-
-Redirect all requests to the app
-------------------------------------
-
-### Redirect DNS queries to the server's IP
-
-Add this line to `/etc/config/dhcp`
-
-```bash
-    config dnsmasq
-    ...
-    list address '/#/192.168.8.1'
-```
-
-
-### Redirect all IP addresses to server's IP
-
-Add this to the end of `/etc/config/firewall`
-
-```
-config redirect
-        option src 'lan'
-        option proto 'tcp'
-        option src_ip '!192.168.8.1'
-        option src_dport '80'
-        option dest_ip '192.168.8.1'
-        option dest_port '80'
-```
-
-
-Setup wireless
------------------
-
-in `/etc/config/wireless` change the encryption option to `none` and change the `ssid`. Max length of SSID is 32 characters!
-
-
-Reboot
--------
-
-The setup is now complete! You can reboot the router by running
+You can now reboot your router by running :
 
 ```
 reboot 0
 ```
+
+After the router has rebooted successfully, the captive portal should be active.
+
 
 Checklists
 =============
