@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="js/jquery-3.2.1.min.js"></script>
+  </head>
+
+  <body>
+    <div id="ls">
+      <h2>/_scripts/ls.lua</h2>
+      <ul></ul>
+    </div>
+
+    <div id="upload">
+      <h2>/_scripts/upload.lua</h2>
+      <input type="file" id="fileUpload" name="fileUpload" />
+      <button>Upload</button>
+    </div>
+
+    <script>
+      function onUploadClick() {
+        var reader = new FileReader()
+
+        reader.onload = function() {
+          $.ajax({
+             url: '/_scripts/upload.lua/' + fileObject.name,
+             type: 'POST',
+             contentType: 'application/octet-stream',
+             data: reader.result,
+             processData: false,
+             success: function() {
+               console.log('upload success!')
+               refreshFileList()
+             },
+             error: function(jqXHR) {
+               console.error(jqXHR)
+             }
+          })
+        }
+
+        reader.onerror = function() {
+          console.error(reader.error)
+          alert('uploading failed!')
+        }
+
+        reader.readAsArrayBuffer(fileObject)
+      }
+
+      var fileObject
+      $('#fileUpload').on('change', function(event) {
+        fileObject = event.target.files[0]
+      })
+      $('#upload button').click(onUploadClick)
+
+      function refreshFileList() {
+        $.getJSON('/_scripts/ls.lua', function(fileList) {
+          var fileListEl = $('#ls ul')
+          fileListEl.empty()
+          fileList.forEach(function(filename) {
+            fileListEl.append('<li>' + filename + '</li>')
+          })
+        })
+      }
+      refreshFileList()
+
+    </script>
+
+
+  </body>
+</html>
