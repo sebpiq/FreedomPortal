@@ -24,6 +24,9 @@ return {
     -- Root path for that can be listed with ls script
     ls_dir = '/mnt/PORTALKEY/www',
 
+    -- iOS CNA is not a full featured browser, so sometimes we might prefer to
+    -- disable it, even if it means the user has to open their browser manually.
+    ios_disable_cna = false,
 
     wireless = {
         -- Public name of the wifi network.

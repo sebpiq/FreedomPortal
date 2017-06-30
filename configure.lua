@@ -1,5 +1,8 @@
 package.path = package.path .. ';./deps/?.lua'
 
+local GL_VERSION_PATH = '/etc/glversion'
+local WSAPI_BIN_PATH = '/usr/bin/wsapi.cgi'
+
 -- Check that we have the right arguments, error message otherwise
 if (arg[1] == nil) then
     print('usage : \n' .. arg[-1] .. ' ' .. arg[0] .. ' <config>')
@@ -35,8 +38,8 @@ run_command('mkdir ' .. config.configured_dir .. '/scripts')
 
 -- Render configured files to `configured_dir`
 local context = {
-    glversion = run_command('cat /etc/glversion'),
-    wsapi_cgi_bin = run_command('which wsapi.cgi'):sub(0, -2),
+    glversion = run_command('cat ' .. GL_VERSION_PATH),
+    wsapi_cgi_bin = WSAPI_BIN_PATH,
     config = config
 }
 
@@ -44,5 +47,6 @@ render_template(context, 'freedomportal/freedomportal.init.d', config.configured
 render_template(context, 'freedomportal/lighttpd.conf', config.configured_dir .. '/lighttpd.conf')
 render_template(context, 'freedomportal/install.sh', config.configured_dir .. '/install.sh')
 render_template(context, 'freedomportal/pages/redirection.html', config.configured_dir .. '/pages/redirection.html')
+render_template(context, 'freedomportal/pages/success.html', config.configured_dir .. '/pages/success.html')
 render_template(context, 'freedomportal/scripts/upload.lua', config.configured_dir .. '/scripts/upload.lua')
 render_template(context, 'freedomportal/scripts/ls.lua', config.configured_dir .. '/scripts/ls.lua')
