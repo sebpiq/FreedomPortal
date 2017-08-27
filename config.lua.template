@@ -3,7 +3,7 @@ return {
     -- Host on which lighttpd will serve custom web pages
     www_host = 'freedomportal.com',
 
-    -- Root url on which scripts are served
+    -- Root url for serving scripts
     scripts_root_url = '/_scripts',
 
     -- Path where the configured files are saved
@@ -11,6 +11,10 @@ return {
 
     -- Root path for the custom web pages served on the static portal
     www_dir = '/mnt/PORTALKEY/www',
+
+    -- [Optional] path to a 404 page which will be displayed if the user
+    -- tries to load a non-existent page. The configured path is relative to `www_dir`.
+    not_found_url = '/404.html'
 
     -- Root path for all log files
     log_dir = '/var/log/lighttpd',
