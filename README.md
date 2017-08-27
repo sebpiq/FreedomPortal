@@ -5,21 +5,24 @@ The FreedomPortal project is an exhibition of digital artworks installed on Wi-F
 
 These instructions explain how to deploy some static web pages on a Wi-Fi router, so that it acts as a captive portal for all clients connecting.
 
-In order to use these instructions, You need a Wi-Fi router:
+**PREREQUISITES**
 
-- able to support OpenWrt (https://openwrt.org/)
-- with a USB port so you can plug a USB key to extend the router's disk space
-- with enough flash memory (I am unsure of the exact amount of memory necessary)
+- **Wi-Fi router** :
 
-We have been using `GL-AR150` routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model or another brand.
+    - able to support OpenWrt (https://openwrt.org/)
+    - with a USB port so you can plug a USB key to extend the router's disk space
+    - with enough flash memory (I am unsure of the exact amount of memory necessary)
+
+    We have been using `GL-AR150` routers, which have all of the above, and come with OpenWrt pre-installed. Instructions are for these specific routers, but can be easily adapted to another model or another brand.
+
+- **Internet access to your router** : in order to install dependencies, the router will need Internet access. You can for example connect its wan port to one free lan port on your home router/modem.
+
 
 **NB**: this is a fairly new project, so expect a few bugs and a few issues in the deployment process. Feedback, bug reports are welcome, open a ticket in the [issue tracker](https://github.com/sebpiq/FreedomPortal/issues).
 
 
 Deploying on a Wi-Fi router
 ==============================
-
-**NB**: In order to install dependencies, the router will need Internet access. You can for example connect its wan port to one free lan port on your home router.
 
 
 Getting the code and creating a configuration file
@@ -103,30 +106,6 @@ reboot 0
 
 After the router has rebooted successfully, the captive portal should be active.
 
-
-Checklists
-=============
-
-Testing
------------
-
-- try to put an https address in address bar
-- try to put IP address in address bar
-- try to put non-https url
-
-
-HTML page basics
--------------------
-
-```
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>192.168.0.1:Where the WiFi comes from</title>
-```
 
 Running tests
 ===============
