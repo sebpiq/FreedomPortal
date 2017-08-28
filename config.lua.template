@@ -19,6 +19,9 @@ return {
     -- Root path for all log files
     log_dir = '/var/log/lighttpd',
 
+    -- Set to true to log visitor's access
+    log_visitors = false,
+
     -- Root path for freedomportal lua src
     FreedomPortal_dir = '/root/FreedomPortal',
 

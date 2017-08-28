@@ -20,7 +20,7 @@ cp -r -T /mnt/PORTALKEY/FreedomPortal/ {{{ config.FreedomPortal_dir }}}
 # Then install the required packages with the following command :
 # NOTE : coxpcall is a dependency of `wsapi`, but shouldn't be needed in lua 5.2 anymore.
 opkg update
-opkg install lighttpd lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lighttpd-mod-cgi lua lua-coxpcall lua-wsapi-base luaposix
+opkg install lighttpd lighttpd-mod-alias lighttpd-mod-rewrite lighttpd-mod-redirect lighttpd-mod-cgi lighttpd-mod-accesslog lua lua-coxpcall lua-wsapi-base luaposix
 
 
 ######### 2) Install start-up script
