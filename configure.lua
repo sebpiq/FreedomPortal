@@ -50,3 +50,5 @@ render_template(context, 'freedomportal/pages/redirection.html', config.configur
 render_template(context, 'freedomportal/pages/success.html', config.configured_dir .. '/pages/success.html')
 render_template(context, 'freedomportal/scripts/upload.lua', config.configured_dir .. '/scripts/upload.lua')
 render_template(context, 'freedomportal/scripts/ls.lua', config.configured_dir .. '/scripts/ls.lua')
+
+print('configuration written at ' .. config.configured_dir)

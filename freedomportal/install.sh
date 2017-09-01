@@ -15,6 +15,7 @@ opkg remove mjpg-streamer
 rm -rf /www/*
 
 # Copy FreedomPortal code from the USB stick and onto the router.
+rm -rf {{{ config.FreedomPortal_dir }}}
 cp -r -T /mnt/PORTALKEY/FreedomPortal/ {{{ config.FreedomPortal_dir }}}
 
 # Then install the required packages with the following command :
