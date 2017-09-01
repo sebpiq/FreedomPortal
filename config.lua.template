@@ -14,7 +14,7 @@ return {
 
     -- [Optional] path to a 404 page which will be displayed if the user
     -- tries to load a non-existent page. The configured path is relative to `www_dir`.
-    not_found_url = '/404.html'
+    page_404_path = '/404.html',
 
     -- Root path for all log files
     log_dir = '/var/log/lighttpd',
