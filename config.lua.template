@@ -17,6 +17,8 @@ return {
     page_404_path = '/404.html',
 
     -- Root path for all log files
+    -- NOTE : files under /var are erased when the router reboots. If you don't want to loose
+    -- your logs, place them somewhere else, for example on the USB key (e.g. /mnt/PORTALKEY/log)
     log_dir = '/var/log/lighttpd',
 
     -- Set to true to log visitor's access
