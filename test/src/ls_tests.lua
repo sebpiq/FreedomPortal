@@ -24,7 +24,7 @@ Test_ls = {}
         luaunit.assertEquals(response.code, 200)
         luaunit.assertEquals(response.headers['Content-Type'], 'application/json')
         luaunit.assertEquals(response.body,
-            '["config.lua","freedomportal",".gitignore","deps",".","run_tests.lua","..","example","config-local.lua","test","configure.lua","README.md","config.lua.template","src","LICENSE-MIT",".git"]')
+            '["freedomportal",".gitignore","parameters.lua.template","deps",".","run_tests.lua","..","example","test","configure.lua","README.md","src","LICENSE-MIT",".git"]')
     end
 
     function Test_ls:test_unallowed_method()

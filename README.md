@@ -1,7 +1,7 @@
 FreedomPortal
 ==============
 
-The FreedomPortal project is an exhibition of digital artworks installed on Wi-Fi routers spread out in the public space.
+FreedomPortal is a platform for exhibiting digital artworks on Wi-Fi routers.
 
 These instructions explain how to deploy some static web pages on a Wi-Fi router, so that it acts as a captive portal for all clients connecting.
 
@@ -30,9 +30,9 @@ Getting the code and creating a configuration file
 
 Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`.
 
-Copy the file `config.lua.template`, name the copy `config.lua`.
+Copy the file `parameters.lua.template`, name the copy `parameters.lua`.
 
-You can optionally edit `config.lua` to customize your installation, but I recommend you try out the default settings first.
+You can optionally edit `parameters.lua` to customize your installation, but I recommend you try out the default settings first.
 
 
 Preparing USB key
@@ -48,7 +48,7 @@ You USB key should now have the following structure :
 
 ```
 FreedomPortal/
-    config.lua
+    parameters.lua
     src/
     ...
 www/
