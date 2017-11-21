@@ -12,6 +12,10 @@ end
 local lustache = require('lustache')
 local config = require(arg[1])
 
+-- Add `last` attribute to last site to help templates
+config.sites[table.getn(config.sites)].last = true
+config.first_site = config.sites[1]
+
 -- Helpers
 function run_command(cmd)
     local process = assert(io.popen(cmd, 'r'))

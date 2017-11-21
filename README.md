@@ -88,7 +88,7 @@ cd /mnt/PORTALKEY/FreedomPortal
 Once inside the folder, run the following command :
 
 ```
-lua configure.lua config
+lua configure.lua parameters
 ```
 
 Then, finalize the installation by running :
