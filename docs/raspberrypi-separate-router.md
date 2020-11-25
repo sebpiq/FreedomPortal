@@ -33,6 +33,15 @@ Uncomment `no-resolv`, Add `address=/#/192.168.1.123` (replace the IP with the d
 sudo /etc/init.d/dnsmasq restart
 ```
 
+Getting the code and creating a configuration file
+------------------------------------------------------
+
+Download latest FreedomPortal code from [here](https://github.com/sebpiq/FreedomPortal/archive/master.zip), unzip and rename the folder to `FreedomPortal`.
+
+Copy the file `parameters.lua.template`, name the copy `parameters.lua`.
+
+You can optionally edit `parameters.lua` to customize your installation, but I recommend you try out the default settings first.
+
 
 Configure DNS server of your Wi-Fi network
 ---------------------------------------------
